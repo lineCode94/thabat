@@ -8,8 +8,8 @@ import { PermissionService } from '../../src/services/permission.service.js';
 import { OnboardingService } from '../../src/services/onboarding.service.js';
 
 const API_BASE_URL = process.env.API_BASE_URL ?? 'http://localhost:5001/api/v1';
-const ADMIN_EMAIL = process.env.VERIFY_ADMIN_EMAIL ?? 'admin@gmail.com';
-const ADMIN_PASSWORD = process.env.VERIFY_ADMIN_PASSWORD ?? 'Islamic--1234';
+const ADMIN_EMAIL = process.env.VERIFY_ADMIN_EMAIL ?? process.env.SEED_ADMIN_EMAIL ?? 'dev-admin@example.local';
+const ADMIN_PASSWORD = process.env.VERIFY_ADMIN_PASSWORD ?? process.env.SEED_ADMIN_PASSWORD ?? 'dev-only-seed-password-change-me';
 const TEST_PASSWORD = 'Password123';
 const runId = Date.now();
 

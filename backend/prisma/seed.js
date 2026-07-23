@@ -1,11 +1,12 @@
 ﻿import { ONBOARDING_STATUS, PENDING_SETUP_REGION_NAME } from '../src/constants/onboarding.js';
 import { ROLES } from '../src/constants/permissionRegistry.js';
+import { env, isProduction } from '../src/config/env.js';
 import { hashPassword } from '../src/lib/hash.js';
 import { prisma } from '../src/lib/prisma.js';
 import { PermissionService } from '../src/services/permission.service.js';
 
-const ADMIN_EMAIL = 'admin@gmail.com';
-const ADMIN_PASSWORD = 'Islamic--1234';
+const DEV_ADMIN_EMAIL = 'dev-admin@example.local';
+const DEV_ADMIN_PASSWORD = 'dev-only-seed-password-change-me';
 const DEVELOPMENT_REGION_NAME = 'Development Region';
 const FIRST_WORSHIP_LEVEL = {
   order: 1,
@@ -165,9 +166,16 @@ async function ensureDevelopmentRegion() {
 }
 
 async function seedDevelopmentAdmin() {
-  if (process.env.NODE_ENV === 'production') {
-    console.log('Skipping development admin seed in production.');
-    return;
+  if (isProduction && (!env.SEED_ADMIN_EMAIL || !env.SEED_ADMIN_PASSWORD)) {
+    throw new Error('SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD are required when running seed in production.');
+  }
+
+  const isUsingFallbackDevAdmin = !env.SEED_ADMIN_EMAIL || !env.SEED_ADMIN_PASSWORD;
+  const adminEmail = env.SEED_ADMIN_EMAIL ?? DEV_ADMIN_EMAIL;
+  const adminPassword = env.SEED_ADMIN_PASSWORD ?? DEV_ADMIN_PASSWORD;
+
+  if (!isProduction && isUsingFallbackDevAdmin) {
+    console.warn('WARNING: Using default dev admin credentials - do not use in production.');
   }
 
   const [superAdminRole, developmentRegion] = await Promise.all([
@@ -175,10 +183,10 @@ async function seedDevelopmentAdmin() {
     ensureDevelopmentRegion(),
   ]);
 
-  const passwordHash = await hashPassword(ADMIN_PASSWORD);
+  const passwordHash = await hashPassword(adminPassword);
 
   await prisma.user.upsert({
-    where: { email: ADMIN_EMAIL },
+    where: { email: adminEmail },
     update: {
       roleId: superAdminRole.id,
       regionId: developmentRegion.id,
@@ -186,7 +194,7 @@ async function seedDevelopmentAdmin() {
     },
     create: {
       fullName: 'Development Admin',
-      email: ADMIN_EMAIL,
+      email: adminEmail,
       passwordHash,
       roleId: superAdminRole.id,
       regionId: developmentRegion.id,
@@ -196,7 +204,7 @@ async function seedDevelopmentAdmin() {
     },
   });
 
-  console.log(`Development admin ensured: ${ADMIN_EMAIL} (${ROLES.SUPER_ADMIN})`);
+  console.log(`Seed admin ensured: ${adminEmail} (${ROLES.SUPER_ADMIN})`);
 }
 
 async function seedWorshipLevels() {

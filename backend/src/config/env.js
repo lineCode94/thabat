@@ -13,6 +13,8 @@ const envSchema = z.object({
   EMAIL_PASSWORD: z.string().default(''),
   CLIENT_URL: z.string().url(),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
+  SEED_ADMIN_EMAIL: z.string().email().optional(),
+  SEED_ADMIN_PASSWORD: z.string().min(12).optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
