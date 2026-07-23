@@ -1,0 +1,118 @@
+{
+  "title": "لوحة التحكم",
+  "subtitle": "نظرة هادئة على تقدم عبادة اليوم.",
+  "errorTitle": "فشل تحميل لوحة التحكم",
+  "errorDescription": "حدثت مشكلة أثناء جلب بياناتك.",
+  "todaySummary": "ملخص اليوم",
+  "todaysCompletion": "إنجاز اليوم",
+  "todaysXp": "نقاط اليوم",
+  "remainingWorship": "العبادات المتبقية",
+  "todaysGoal": "هدف اليوم",
+  "goalReady": "اجعل عبادة اليوم قريبة وبسيطة.",
+  "completedItems": "العناصر المكتملة",
+  "remainingItems": "العناصر المتبقية",
+  "completed": "مكتمل",
+  "worshipItems": "عناصر العبادة",
+  "remainingToday": "المتبقي اليوم",
+  "remainingSummary": "{{count}} عنصر متبقي. أكملها من عبادة اليوم.",
+  "openTodayWorship": "افتح عبادة اليوم",
+  "moreRemaining": "+{{count}} عنصر آخر في عبادة اليوم",
+  "moreCompleted": "+{{count}} عنصر مكتمل",
+  "allCaughtUp": "أنت على المسار.",
+  "noCompletedYet": "لم تكتمل أي عناصر اليوم بعد.",
+  "track": "تسجيل",
+  "emptyTitle": "أنت مستعد لبدء رحلة اليوم.",
+  "emptyDescription": "ابدأ بعبادة صغيرة ودع اليوم يتقدم بهدوء.",
+  "emptyCta": "الذهاب إلى المتابعة",
+  "readiness": {
+    "ONBOARDING_INCOMPLETE": {
+      "title": "إعداد حسابك أوشك على الاكتمال",
+      "description": "ما زال حسابك يحتاج إلى إعداد المنطقة قبل تجهيز عبادة اليوم."
+    },
+    "NO_ACTIVE_WORSHIP_LEVEL": {
+      "title": "لا يوجد مستوى عبادة نشط",
+      "description": "لا يوجد مستوى عبادة نشط مرتبط بحسابك بعد. تواصل مع المتابع أو المسؤول."
+    },
+    "NO_LEVEL_REQUIREMENTS": {
+      "title": "لم يتم ضبط المتطلبات",
+      "description": "مستوى العبادة الحالي لا يحتوي على متطلبات بعد."
+    },
+    "NO_WORSHIP_ITEMS_CONFIGURED": {
+      "title": "لا توجد عناصر عبادة متاحة",
+      "description": "متطلبات مستواك الحالي لا تشير إلى عناصر عبادة نشطة حالياً."
+    }
+  },
+  "upcomingReminders": "التذكيرات القادمة",
+  "remindersComingSoon": "ميزة التذكيرات قادمة قريباً.",
+  "thisWeek": "هذا الأسبوع",
+  "thisMonth": "هذا الشهر",
+  "daysCompleted": "{{completed}} من {{total}} أيام مكتملة",
+  "daysCompletedThisMonth": "{{completed}} من {{total}} أيام مكتملة هذا الشهر",
+  "missions": {
+    "eyebrow": "جوائز الأسبوع",
+    "title": "المهام",
+    "pendingBadge": "{{count}} قيد التنفيذ",
+    "weekly": "هذا الأسبوع",
+    "monthly": "هذا الشهر",
+    "xp": "نقاط المهام",
+    "allDone": "كل المهام المسندة مكتملة.",
+    "pendingHint": "{{count}} مهمة تنتظر الإكمال ونقاط المكافأة.",
+    "open": "فتح المهام"
+  },
+  "level": {
+    "journey": "رحلتك",
+    "currentLevel": "المستوى الحالي",
+    "totalXp": "إجمالي النقاط: {{xp}}",
+    "xpToLevel": "{{xp}} نقطة للوصول إلى المستوى {{level}}"
+  },
+  "streak": {
+    "title": "سلسلة الأيام",
+    "label": "السلسلة",
+    "best": "الأفضل: {{days}} أيام",
+    "lastTracked": "آخر تسجيل: {{date}}",
+    "statuses": {
+      "ACTIVE": "نشطة",
+      "AT_RISK": "بحاجة لانتباه",
+      "BROKEN": "منقطعة",
+      "NEW": "ابدأ الآن"
+    }
+  },
+  "reminders": {
+    "daily": "التذكير اليومي",
+    "weekly": "التذكير الأسبوعي",
+    "quietHours": "ساعات الهدوء",
+    "enabled": "مفعل",
+    "disabled": "معطل",
+    "none": "غير محدد"
+  },
+  "weekProgress": {
+    "title": "تقدم هذا الأسبوع",
+    "activeDays": "أيام نشطة",
+    "points": "نقاط",
+    "consistency": "الثبات"
+  },
+  "recentNotifications": {
+    "title": "آخر الإشعارات",
+    "viewAll": "عرض الكل",
+    "empty": "لا توجد إشعارات بعد."
+  },
+  "advice": {
+    "openTracking": "فتح المتابعة",
+    "excellent": {
+      "title": "يوم قوي",
+      "description": "أنت قريب من يوم مكتمل. حافظ على نفس الإيقاع وأكمل بهدوء."
+    },
+    "steady": {
+      "title": "تقدم جيد",
+      "description": "يومك ماشي بشكل طيب. اختر بندًا متبقيًا وحافظ على الزخم."
+    },
+    "start": {
+      "title": "ابدأ بخطوة صغيرة",
+      "description": "ابدأ بأسهل عبادة في الجدول. البداية الصغيرة تجعل باقي اليوم أخف."
+    },
+    "empty": {
+      "title": "جاهز عندما تبدأ",
+      "description": "جدول عبادتك جاهز. افتح المتابعة عندما يبدأ يومك."
+    }
+  }
+}

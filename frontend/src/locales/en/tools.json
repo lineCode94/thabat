@@ -1,0 +1,47 @@
+{
+  "title": "Tools",
+  "subtitle": "Quiet spiritual utilities for your daily rhythm.",
+  "tasbih": {
+    "title": "Tasbih",
+    "subtitle": "Tap, click, or press Space to count your dhikr.",
+    "count": "Current count",
+    "target": "Target",
+    "session": "Session",
+    "tap": "Tap to count",
+    "reset": "Reset",
+    "presets": "Presets",
+    "customTarget": "Custom target",
+    "completed": "Target completed"
+  },
+  "prayers": {
+    "title": "Prayer Progress",
+    "subtitle": "A calm timeline for today's prayers.",
+    "nextPrayer": "Next prayer",
+    "timeRemaining": "Time remaining",
+    "completed": "Completed",
+    "missed": "Missed",
+    "upcoming": "Upcoming",
+    "later": "Later",
+    "currentWindow": "Current window",
+    "progress": "Day progress",
+    "locationNote": "Times are a local planning view and can be refined later with a prayer-time provider.",
+    "names": {
+      "fajr": "Fajr",
+      "dhuhr": "Dhuhr",
+      "asr": "Asr",
+      "maghrib": "Maghrib",
+      "isha": "Isha"
+    }
+  },
+  "ramadan": {
+    "title": "Ramadan Countdown",
+    "subtitle": "A focused countdown to the next Ramadan.",
+    "expected": "Expected start",
+    "note": "The final date depends on moon sighting.",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "message": "Prepare gently, one steady day at a time."
+  }
+}

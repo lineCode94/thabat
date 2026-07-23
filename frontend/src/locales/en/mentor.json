@@ -1,0 +1,35 @@
+{
+  "dashboard": {
+    "eyebrow": "Mentor experience",
+    "title": "Mentor Dashboard",
+    "description": "Review assigned users, today's tracking, weak days, comments, and worship level follow-up from one place.",
+    "errorTitle": "Could not load mentor dashboard",
+    "errorDescription": "Something went wrong while loading the mentor overview.",
+    "retry": "Try again",
+    "stats": {
+      "assignedUsers": "Assigned users",
+      "activeToday": "Tracked today",
+      "missingToday": "Missing today",
+      "weakUsers": "Below 50%",
+      "averageConsistency": "Average consistency",
+      "pendingReviews": "Pending reviews"
+    },
+    "users": {
+      "title": "Assigned user progress",
+      "description": "Use this table to follow progress, comments, weak days, and assign the appropriate worship level.",
+      "emptyTitle": "No users assigned yet",
+      "emptyDescription": "Assigned users will appear here once mentorship relationships are active.",
+      "name": "User",
+      "level": "Worship level",
+      "today": "Today",
+      "week": "Week",
+      "comments": "Recent comments",
+      "actions": "Actions",
+      "tracked": "{{value}}%",
+      "notTracked": "Missing",
+      "weak": "Needs follow-up",
+      "report": "Weekly report",
+      "assignLevel": "Assign level"
+    }
+  }
+}

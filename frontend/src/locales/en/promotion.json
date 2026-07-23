@@ -1,0 +1,30 @@
+{
+  "eyebrow": "Worship level",
+  "title": "Promotion recommendations",
+  "description": "Evaluate worship level readiness and manage human-approved promotion recommendations.",
+  "userIdPlaceholder": "Enter assigned user ID",
+  "readinessTitle": "Promotion readiness",
+  "criteriaTitle": "Readiness criteria",
+  "reasonPlaceholder": "Recommendation reason",
+  "decisionNotesPlaceholder": "Decision notes",
+  "actions": {
+    "evaluate": "Evaluate readiness",
+    "createRecommendation": "Create recommendation",
+    "approve": "Approve promotion",
+    "decline": "Decline"
+  },
+  "status": {
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "DECLINED": "Declined"
+  },
+  "criteria": {
+    "CONSISTENCY": "Consistency",
+    "TIME_AT_LEVEL": "Time at current level",
+    "COMPLETED_REVIEWS": "Completed weekly reviews",
+    "MENTOR_SUGGESTION": "Mentor suggestion"
+  },
+  "states": {
+    "error": "We could not load promotion data."
+  }
+}

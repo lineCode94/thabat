@@ -1,0 +1,93 @@
+{
+  "title": "الأوسمة",
+  "failed": "فشل تحميل الأوسمة.",
+  "emptyTitle": "لا توجد أوسمة متاحة",
+  "emptyDescription": "تعريفات الأوسمة غير مهيأة بعد.",
+  "earnedCount": "{{earned}} من {{total}} مكتسبة",
+  "complete": "{{percent}}% مكتمل",
+  "recentlyEarned": "المكتسبة حديثا",
+  "noneEarned": "لم تكتسب أي أوسمة بعد.",
+  "viewAll": "عرض الكل",
+  "viewAllBadges": "عرض كل الأوسمة",
+  "defaultDescription": "أكمل محطات محددة لاكتساب هذا الوسام.",
+  "earned": "مكتسب",
+  "earnedOn": "اكتُسب في {{date}}",
+  "notEarned": "لم يكتسب بعد",
+  "closeDialog": "إغلاق النافذة",
+  "noBadgesInCategory": "لا توجد أوسمة في هذه الفئة.",
+  "ariaLabel": "وسام {{name}} — {{status}}",
+  "newBadgeTitle": "وسام جديد",
+  "newBadgesTitle": "أوسمة جديدة",
+  "newBadgeDescription": "تقدم جميل. مجهودك اليوم فتح لك وسامًا جديدًا.",
+  "newBadgesDescription": "تقدم جميل. مجهودك اليوم فتح لك {{count}} أوسمة جديدة.",
+  "continue": "متابعة",
+  "categories": {
+    "All": "الكل",
+    "Prayer": "الصلاة",
+    "Quran": "القرآن",
+    "Streak": "الثبات",
+    "XP": "النقاط",
+    "Missions": "المهام",
+    "Levels": "المستويات",
+    "Mentor": "المتابع",
+    "Special Events": "مناسبات خاصة",
+    "Knowledge": "طلب العلم",
+    "Dawah": "الدعوة"
+  },
+  "rarities": {
+    "Common": "عادي",
+    "Rare": "نادر",
+    "Epic": "ملحمي",
+    "Legendary": "أسطوري"
+  },
+  "items": {
+    "early_bird": {
+      "name": "بداية الفجر",
+      "description": "أكمل أول متابعة لصلاة الفجر."
+    },
+    "fajr_hero": {
+      "name": "بطل الفجر",
+      "description": "سجّل 30 متابعة مكتملة لصلاة الفجر."
+    },
+    "night_worshipper": {
+      "name": "عابد الليل",
+      "description": "سجّل 30 متابعة مكتملة لعبادات الليل."
+    },
+    "quran_companion": {
+      "name": "رفيق القرآن",
+      "description": "سجّل أول ورد قرآني لك."
+    },
+    "knowledge_seeker": {
+      "name": "طالب العلم",
+      "description": "سجّل مجموع 100 ورد قرآني."
+    },
+    "consistent": {
+      "name": "ثابت",
+      "description": "حافظ على سلسلة عبادة متصلة لمدة 7 أيام."
+    },
+    "strong_comeback": {
+      "name": "عودة قوية",
+      "description": "أعد بناء سلسلة الثبات بعد انقطاعها."
+    },
+    "xp_collector": {
+      "name": "جامع النقاط",
+      "description": "اجمع 500 نقطة إجمالية."
+    },
+    "mission_starter": {
+      "name": "بداية المهام",
+      "description": "أكمل أول مهمة أسبوعية."
+    },
+    "first_promotion": {
+      "name": "أول ترقية",
+      "description": "احصل على أول ترقية في مستوى العبادة."
+    },
+    "helpful_brother": {
+      "name": "المعين النافع",
+      "description": "ساعد 10 مستخدمين كمتابع."
+    },
+    "one_year_journey": {
+      "name": "رحلة عام",
+      "description": "أكمل 365 يومًا منذ انضمامك إلى ثبات."
+    }
+  }
+}

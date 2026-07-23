@@ -1,0 +1,93 @@
+{
+  "title": "Badges",
+  "failed": "Failed to load badges.",
+  "emptyTitle": "No badges available",
+  "emptyDescription": "Badge definitions are not configured yet.",
+  "earnedCount": "{{earned}} of {{total}} earned",
+  "complete": "{{percent}}% complete",
+  "recentlyEarned": "Recently Earned",
+  "noneEarned": "No badges earned yet.",
+  "viewAll": "View all",
+  "viewAllBadges": "View all badges",
+  "defaultDescription": "Complete specific milestones to earn this badge.",
+  "earned": "Earned",
+  "earnedOn": "Earned {{date}}",
+  "notEarned": "Not yet earned",
+  "closeDialog": "Close dialog",
+  "noBadgesInCategory": "No badges in this category.",
+  "ariaLabel": "{{name}} badge — {{status}}",
+  "newBadgeTitle": "New badge earned",
+  "newBadgesTitle": "New badges earned",
+  "newBadgeDescription": "Beautiful progress. Your effort today unlocked a new badge.",
+  "newBadgesDescription": "Beautiful progress. Your effort today unlocked {{count}} new badges.",
+  "continue": "Continue",
+  "categories": {
+    "All": "All",
+    "Prayer": "Prayer",
+    "Quran": "Quran",
+    "Streak": "Streak",
+    "XP": "XP",
+    "Knowledge": "Knowledge",
+    "Dawah": "Dawah",
+    "Missions": "Missions",
+    "Levels": "Levels",
+    "Mentor": "Mentor",
+    "Special Events": "Special Events"
+  },
+  "rarities": {
+    "Common": "Common",
+    "Rare": "Rare",
+    "Epic": "Epic",
+    "Legendary": "Legendary"
+  },
+  "items": {
+    "early_bird": {
+      "name": "Early Bird",
+      "description": "Complete your first Fajr prayer tracking."
+    },
+    "fajr_hero": {
+      "name": "Fajr Hero",
+      "description": "Log 30 completed Fajr prayers."
+    },
+    "night_worshipper": {
+      "name": "Night Worshipper",
+      "description": "Log 30 completed night prayers."
+    },
+    "quran_companion": {
+      "name": "Quran Companion",
+      "description": "Log your first Quran page."
+    },
+    "knowledge_seeker": {
+      "name": "Knowledge Seeker",
+      "description": "Log a total of 100 Quran pages."
+    },
+    "consistent": {
+      "name": "Consistent",
+      "description": "Reach a 7-day consecutive worship streak."
+    },
+    "strong_comeback": {
+      "name": "Strong Comeback",
+      "description": "Rebuild your streak after breaking it."
+    },
+    "xp_collector": {
+      "name": "XP Collector",
+      "description": "Earn a total of 500 XP."
+    },
+    "mission_starter": {
+      "name": "Mission Starter",
+      "description": "Complete your first weekly mission."
+    },
+    "first_promotion": {
+      "name": "First Promotion",
+      "description": "Receive your first worship level promotion."
+    },
+    "helpful_brother": {
+      "name": "Helpful Brother",
+      "description": "Help 10 users as a mentor."
+    },
+    "one_year_journey": {
+      "name": "One Year Journey",
+      "description": "Complete 365 days since joining THABAT."
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "appName": "THABAT",
+  "actions": {
+    "cancel": "Cancel",
+    "collapse": "Collapse",
+    "done": "Done",
+    "retry": "Try again",
+    "save": "Save",
+    "search": "Search"
+  },
+  "states": {
+    "loading": "Loading...",
+    "notFound": "The page you are looking for does not exist.",
+    "unknownItem": "Unknown item"
+  },
+  "home": {
+    "description": "A spiritual journey platform focused on consistency, encouragement, and meaningful progress.",
+    "getStarted": "Get Started"
+  },
+  "units": {
+    "count": "count",
+    "days": "days",
+    "minutes": "minutes",
+    "xp": "XP"
+  }
+}

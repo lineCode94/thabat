@@ -1,0 +1,200 @@
+{
+  "eyebrow": "Reports",
+  "title": "Progress Reports",
+  "description": "A calm place to review daily, weekly, monthly, and yearly progress without comparison or pressure.",
+  "back": "Back to Reports",
+  "placeholderDescription": "This reporting view is reserved for the Sprint 5 reporting workflow.",
+  "types": {
+    "daily": {
+      "title": "Daily Reports",
+      "description": "Review worship completion, XP, streak progress, and daily consistency."
+    },
+    "weekly": {
+      "title": "Weekly Reports",
+      "description": "Follow weekly completion, mentor feedback, and progress trends."
+    },
+    "monthly": {
+      "title": "Monthly Reports",
+      "description": "Compare monthly consistency, XP growth, missions, and worship balance."
+    },
+    "yearly": {
+      "title": "Yearly Reports",
+      "placeholderTitle": "Yearly Report",
+      "description": "See long-term streaks, achievements, and yearly journey milestones."
+    },
+    "dailyPlaceholder": {
+      "title": "Daily Report"
+    },
+    "weeklyPlaceholder": {
+      "title": "Weekly Report"
+    },
+    "monthlyPlaceholder": {
+      "title": "Monthly Report"
+    }
+  },
+  "weekly": {
+    "eyebrow": "Weekly report",
+    "title": "Weekly Progress Report",
+    "description": "Review the most recent closed week and move through historical weekly reports.",
+    "descriptionForUser": "Review weekly progress for {{name}}.",
+    "actions": {
+      "retry": "Try again"
+    },
+    "navigator": {
+      "label": "Selected week",
+      "previous": "Previous week",
+      "next": "Next week"
+    },
+    "summary": {
+      "xpEarned": "XP earned",
+      "consistencyPercentage": "Consistency",
+      "worshipCompletionPercentage": "Worship completion"
+    },
+    "breakdown": {
+      "title": "Worship Breakdown",
+      "description": "Completion by worship item for this closed week.",
+      "item": "Worship item",
+      "completed": "Completed",
+      "score": "Score",
+      "completion": "Completion",
+      "searchPlaceholder": "Search worship items",
+      "categorySummary": "{{completed}} / {{total}} completed · {{percent}}%",
+      "uncategorized": "Uncategorized",
+      "noMatchesTitle": "No matching worship items",
+      "noMatchesDescription": "Try another search term to find a worship item in this report.",
+      "completedValue": "{{completed}} / {{total}}",
+      "scoreValue": "{{earned}} / {{total}}",
+      "emptyTitle": "No worship entries",
+      "emptyDescription": "This weekly report did not include worship item activity.",
+      "notes": "Notes",
+      "categoryTotal": "Section total",
+      "completedDay": "Completed",
+      "missedDay": "Not completed",
+      "notAssignedDay": "Not assigned this day",
+      "categoryNames": {
+        "fajr": "Fajr"
+      }
+    },
+    "viewedUser": {
+      "reportFor": "{{name}}'s report",
+      "personalReport": "Your personal report",
+      "personalDescription": "You are viewing your own weekly progress."
+    },
+    "streak": {
+      "title": "Streak Status",
+      "currentValue": "{{count}} days",
+      "longestValue": "Longest streak: {{count}} days",
+      "noStatus": "No status"
+    },
+    "comparison": {
+      "title": "Compared With Previous Week",
+      "description": "Only the delta from the previous week is shown.",
+      "xpDelta": "XP change",
+      "consistencyDelta": "Consistency change",
+      "completionDelta": "Completion change"
+    },
+    "mentorFeedback": {
+      "title": "Mentor Feedback",
+      "rating": "Rating: {{rating}}",
+      "recommendation": "Recommendation"
+    },
+    "userSearch": {
+      "title": "View another user",
+      "description": "Search within the users you are allowed to review.",
+      "label": "User",
+      "placeholder": "Search by name or email",
+      "selected": "Viewing report for {{name}}"
+    },
+    "states": {
+      "weekNotClosedTitle": "This week is not closed yet",
+      "weekNotClosedDescription": "Check back after the week ends. Reopened weeks keep their report frozen only if one was already generated.",
+      "forbiddenTitle": "Report not available",
+      "forbiddenDescription": "You do not have permission to view this user's weekly report.",
+      "errorTitle": "Could not load weekly report",
+      "errorDescription": "Something went wrong while loading this report."
+    }
+  },
+  "shared": {
+    "metrics": {
+      "xpEarned": "XP earned",
+      "consistencyPercentage": "Consistency",
+      "worshipCompletionPercentage": "Worship completion",
+      "completedScore": "Score / {{total}}"
+    },
+    "breakdown": {
+      "title": "Worship Breakdown",
+      "description": "Completion by worship item for this report period.",
+      "item": "Worship item",
+      "category": "Category",
+      "completed": "Completed",
+      "score": "Score",
+      "completion": "Completion",
+      "completedValue": "{{completed}} / {{total}}",
+      "scoreValue": "{{earned}} / {{total}}",
+      "emptyTitle": "No worship entries",
+      "emptyDescription": "This report does not include worship item activity yet.",
+      "searchPlaceholder": "Search worship items",
+      "categorySummary": "{{completed}} / {{total}} completed · {{percent}}%",
+      "uncategorized": "Uncategorized",
+      "noMatchesTitle": "No matching worship items",
+      "noMatchesDescription": "Try another search term to find a worship item in this report."
+    },
+    "rewards": {
+      "title": "Rewards earned",
+      "emptyTitle": "No rewards in this period",
+      "emptyDescription": "Badges, achievements, and completed missions will appear here.",
+      "types": {
+        "badges": "Badge",
+        "achievements": "Achievement",
+        "missions": "Mission"
+      }
+    }
+  },
+  "daily": {
+    "eyebrow": "Daily report",
+    "title": "Daily Worship Report",
+    "description": "Review a single day score, completion, rewards, missions, and worship breakdown.",
+    "states": {
+      "emptyTitle": "No tracking for this day",
+      "emptyDescription": "Once daily worship is saved, the report will show score, rewards, and breakdown here.",
+      "errorTitle": "Could not load daily report",
+      "errorDescription": "Something went wrong while loading this daily report."
+    },
+    "scoreLine": "Daily score: {{score}} / {{total}}",
+    "statusDescription": "A focused view of this day score, rewards, notes, and worship details.",
+    "status": {
+      "OPEN": "Open",
+      "CLOSED": "Closed",
+      "REOPENED": "Reopened"
+    },
+    "insights": {
+      "streak": "Current streak",
+      "streakHint": "Your active worship streak.",
+      "rewards": "Rewards today",
+      "rewardsHint": "Badges, achievements, and missions earned today.",
+      "notes": "Day notes",
+      "noNotes": "No notes were added for this day."
+    }
+  },
+  "monthly": {
+    "eyebrow": "Monthly report",
+    "title": "Monthly Progress Report",
+    "description": "Review monthly consistency, worship score, rewards, completed missions, and strongest or weakest days.",
+    "monthSummary": "Monthly totals from worship, badges, achievements, and missions.",
+    "bestDay": "Best day",
+    "weakestDay": "Weakest day",
+    "dayScore": "{{score}} / {{total}} score",
+    "states": {
+      "errorTitle": "Could not load monthly report",
+      "errorDescription": "Something went wrong while loading this monthly report."
+    },
+    "calendar": {
+      "title": "Monthly Calendar",
+      "description": "Each day shows score, completion, and activity intensity for the selected month.",
+      "emptyTitle": "No daily activity yet",
+      "emptyDescription": "Daily report cards will appear here after tracking is saved.",
+      "dayTitle": "{{date}} · {{percent}}% complete",
+      "items": "{{completed}} / {{total}} items"
+    }
+  }
+}

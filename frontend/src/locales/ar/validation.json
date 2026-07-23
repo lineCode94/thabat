@@ -1,0 +1,16 @@
+{
+  "invalidEmail": "البريد الإلكتروني غير صالح",
+  "passwordRequired": "كلمة المرور مطلوبة",
+  "fullNameMin": "يجب ألا يقل الاسم الكامل عن حرفين",
+  "passwordMin": "يجب ألا تقل كلمة المرور عن 8 أحرف",
+  "passwordUppercase": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل",
+  "passwordNumber": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل",
+  "passwordRequirements": "متطلبات كلمة المرور",
+  "passwordMinShort": "8 أحرف على الأقل",
+  "passwordUppercaseShort": "حرف كبير واحد",
+  "passwordNumberShort": "رقم واحد",
+  "passwordMatch": "كلمتا المرور غير متطابقتين",
+  "nameMin": "يجب ألا يقل الاسم عن حرفين",
+  "invalidUrl": "الرابط غير صالح",
+  "currentPasswordRequired": "كلمة المرور الحالية مطلوبة"
+}

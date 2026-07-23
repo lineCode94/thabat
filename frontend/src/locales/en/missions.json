@@ -1,0 +1,69 @@
+{
+  "eyebrow": "Missions",
+  "title": "Missions",
+  "description": {
+    "user": "Follow assigned missions, complete your monthly challenge steps, and collect bonus XP.",
+    "catalog": "Create, assign, and follow missions that support worship consistency."
+  },
+  "stats": {
+    "total": "Visible missions",
+    "assigned": "Assigned to me",
+    "completed": "Completed"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "completed": "Completed",
+    "pending": "Pending"
+  },
+  "card": {
+    "noDescription": "No description added.",
+    "xp": "{{xp}} bonus XP",
+    "progress": "Progress: {{progress}}%",
+    "completedAt": "Completed on {{date}}"
+  },
+  "actions": {
+    "create": "Create mission",
+    "edit": "Edit",
+    "assign": "Assign",
+    "assigning": "Assigning...",
+    "complete": "Complete",
+    "completing": "Completing...",
+    "deactivate": "Deactivate",
+    "deactivating": "Deactivating...",
+    "cancel": "Cancel",
+    "save": "Save mission",
+    "saving": "Saving...",
+    "retry": "Try again"
+  },
+  "states": {
+    "emptyTitle": "No missions yet",
+    "emptyUser": "You do not have any assigned missions right now.",
+    "emptyCatalog": "Create the first mission to start assigning monthly challenges.",
+    "errorTitle": "Missions could not be loaded"
+  },
+  "form": {
+    "createTitle": "Create mission",
+    "editTitle": "Edit mission",
+    "description": "Define a focused challenge and the bonus XP users earn when they complete it.",
+    "title": "Title",
+    "details": "Description",
+    "bonusXP": "Bonus XP",
+    "active": "Mission is active"
+  },
+  "assign": {
+    "title": "Assign mission",
+    "description": "Assign \"{{title}}\" to a user within your allowed scope.",
+    "user": "User",
+    "userSearchPlaceholder": "Search users by name or email",
+    "selectedUser": "Selected: {{name}}",
+    "noUsersTitle": "No users found",
+    "noUsersDescription": "Try another name or email within your allowed scope."
+  },
+  "errors": {
+    "FORBIDDEN": "You do not have permission to perform this action.",
+    "NOT_FOUND": "The mission or target user could not be found.",
+    "VALIDATION_ERROR": "Check the entered values and try again.",
+    "default": "Something went wrong. Please try again."
+  }
+}

@@ -1,0 +1,422 @@
+{
+  "mentorAssignments": {
+    "eyebrow": "Admin mentorship",
+    "title": "Mentor assignments",
+    "description": "Assign users to mentors and keep active mentorship relationships clear.",
+    "actions": {
+      "assign": "Assign mentor",
+      "reassign": "Reassign",
+      "deactivate": "Deactivate",
+    "deactivating": "Deactivating...",
+    "assignUsers": "Assign users",
+    "retry": "Try again",
+      "saveAssignment": "Save assignment",
+      "saving": "Saving..."
+    },
+  "deactivate": {
+      "title": "Deactivate assignment",
+      "description": "Deactivate the active assignment between {{user}} and {{mentor}}? This keeps the assignment history but removes it as the user's current mentor.",
+      "confirm": "Deactivate assignment",
+      "cancel": "Cancel"
+    },
+    "dialog": {
+      "assignTitle": "Assign a mentor",
+      "reassignTitle": "Reassign mentor",
+      "description": "Choose a user and the mentor who should actively follow them."
+    },
+    "form": {
+      "user": "User",
+      "userSearchPlaceholder": "Search users by name or email",
+      "selectedUser": "Selected user: {{name}}",
+      "mentor": "Mentor",
+      "mentorPlaceholder": "Select mentor"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "title": "Active assignments",
+      "description": "Only current active mentor assignments are shown here.",
+      "user": "User",
+      "mentor": "Current mentor",
+      "region": "Region",
+      "assignedAt": "Assigned",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "states": {
+      "emptyTitle": "No active assignments yet",
+      "emptyDescription": "Start by assigning a user to a mentor.",
+      "errorTitle": "Could not load assignments",
+      "errorDescription": "Refresh the data or try again in a moment.",
+      "selectUserFirst": "Select a user first to load mentors in their region.",
+      "noMentorsInRegion": "No mentors are available in this region.",
+      "saveError": "Could not save the mentor assignment.",
+      "deactivateError": "Could not deactivate the mentor assignment."
+    }
+  },
+  "regions": {
+    "eyebrow": "Admin regions",
+    "title": "Regions",
+    "description": "Create and manage the regions used to scope users, admins, and reporting.",
+    "actions": {
+      "create": "Create region",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "deactivating": "Deactivating...",
+      "retry": "Try again",
+      "save": "Save region",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "dialog": {
+      "createTitle": "Create region",
+      "editTitle": "Edit region",
+      "description": "Keep region names clear so user ownership and admin scope stay easy to understand."
+    },
+    "deactivate": {
+      "title": "Deactivate region",
+      "description": "Deactivate {{name}}? This preserves history and hides the region from active workflows.",
+      "confirm": "Deactivate region"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Region name",
+      "description": "Description",
+      "descriptionPlaceholder": "Optional description"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "title": "Region directory",
+      "description": "Manage active and inactive regions from one place.",
+      "name": "Name",
+      "descriptionColumn": "Description",
+      "userCount": "Users",
+      "status": "Status",
+      "actions": "Actions",
+      "noDescription": "No description"
+    },
+    "states": {
+      "emptyTitle": "No regions yet",
+      "emptyDescription": "Create the first region to organize users and admins.",
+      "errorTitle": "Could not load regions",
+      "errorDescription": "Refresh the data or try again in a moment."
+    },
+    "errors": {
+      "nameExists": "A region with this name already exists.",
+      "validation": "Check the region details and try again.",
+      "saveFailed": "Could not save the region.",
+      "hasUsers": "This region still has users and cannot be deleted. Move or deactivate its users first.",
+      "notFound": "This region no longer exists.",
+      "deactivateFailed": "Could not deactivate the region."
+    }
+  },
+  "users": {
+    "eyebrow": "Admin users",
+    "title": "Users",
+    "description": "Manage user access, regions, status, and active mentorship from one place.",
+    "actions": {
+      "create": "Create user",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "retry": "Try again",
+      "save": "Save user",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "transferRegion": "Transfer region",
+      "assignMentor": "Assign mentor",
+      "reassignMentor": "Reassign"
+    },
+    "dialog": {
+      "createTitle": "Create user",
+      "editTitle": "Edit user",
+      "description": "Keep account details aligned with the user role and region scope."
+    },
+    "deactivate": {
+      "title": "Deactivate user",
+      "description": "Deactivate {{name}}? They will no longer be able to use the application until reactivated.",
+      "confirm": "Deactivate user"
+    },
+    "reactivate": {
+      "title": "Reactivate user",
+      "description": "Reactivate {{name}} and restore access to the application.",
+      "confirm": "Reactivate user"
+    },
+    "transfer": {
+      "title": "Transfer region",
+      "description": "Move {{name}} to another region. Use this only when ownership has actually changed.",
+      "confirm": "Transfer region"
+    },
+    "form": {
+      "fullName": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "role": "Role",
+      "rolePlaceholder": "Select role",
+      "region": "Region",
+      "regionPlaceholder": "Select region",
+      "ownRegionLocked": "Your region",
+      "phone": "Phone"
+    },
+    "filters": {
+      "title": "Filters",
+      "description": "Narrow users by scope, role, mentor, status, or search.",
+      "search": "Search users by name or email",
+      "region": "Region",
+      "allRegions": "All regions",
+      "role": "Role",
+      "allRoles": "All roles",
+      "mentor": "Mentor",
+      "allMentors": "All mentors",
+      "status": "Status",
+      "allStatuses": "All statuses"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "roles": {
+      "USER": "User",
+      "MENTOR": "Mentor",
+      "REGION_ADMIN": "Region Admin",
+      "SUPER_ADMIN": "Super Admin"
+    },
+    "table": {
+      "title": "User directory",
+      "description": "A paginated view of users in your permitted scope.",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "region": "Region",
+      "currentMentor": "Current mentor",
+      "noMentor": "No mentor",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "pagination": {
+      "summary": "Page {{page}} of {{totalPages}} · {{total}} users",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "states": {
+      "emptyTitle": "No users found",
+      "emptyDescription": "Create a user or adjust the filters to see results.",
+      "errorTitle": "Could not load users",
+      "errorDescription": "Refresh the data or try again in a moment."
+    },
+    "errors": {
+      "emailInUse": "This email address is already in use.",
+      "validation": "Check the user details and try again.",
+      "forbidden": "You do not have permission to perform this action.",
+      "saveFailed": "Could not save the user.",
+      "notFound": "This user no longer exists.",
+      "statusChangeFailed": "Could not update the user status.",
+      "regionInvalid": "The selected region is not valid.",
+      "transferFailed": "Could not transfer the user to this region."
+    }
+  },
+  "worshipSchedule": {
+    "eyebrow": "Admin worship",
+    "title": "Worship curriculum",
+    "description": "Manage the worship curriculum that defines what users receive in their daily tracking flow. This is an admin configuration screen, not a personal tracking page.",
+    "actions": {
+      "createItem": "Add worship item",
+      "createCategory": "Add category",
+      "customizeUser": "Customize user schedule",
+      "manageLevels": "Manage levels",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "retry": "Try again",
+      "save": "Save item",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "stats": {
+      "scheduled": "Included in curriculum",
+      "active": "Active items",
+      "total": "Total items",
+      "points": "Curriculum points",
+      "targets": "Counter targets"
+    },
+    "dialog": {
+      "createTitle": "Add worship item",
+      "editTitle": "Edit worship item",
+      "description": "Set points, input type, target value, day restrictions, and whether this item belongs to the user's curriculum."
+    },
+    "categoryDialog": {
+      "title": "Add category",
+      "description": "Create a grouping for worship items, such as Fajr, Quran, or Friday actions.",
+      "name": "Category name",
+      "namePlaceholder": "Category name",
+      "save": "Save category"
+    },
+    "form": {
+      "title": "Item title",
+      "titlePlaceholder": "Example: Morning adhkar",
+      "category": "Category",
+      "categoryPlaceholder": "Select category",
+      "inputType": "Input type",
+      "score": "Points",
+      "xp": "XP reward",
+      "targetValue": "Target",
+      "targetPlaceholder": "Optional, e.g. 100",
+      "order": "Order",
+      "days": "Visible days",
+      "everyDay": "Every day",
+      "includeInDailySchedule": "Include this item in the curriculum",
+      "isActive": "Item is active"
+    },
+    "inputTypes": {
+      "BOOLEAN": "Checkbox",
+      "COUNT": "Counter",
+      "DURATION": "Duration",
+      "TEXT": "Text"
+    },
+    "days": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    },
+    "status": {
+      "visibleToday": "Included",
+      "notVisibleToday": "Not included",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "title": "Worship item directory",
+      "description": "Configure worship items, scoring, targets, and curriculum inclusion from one place.",
+      "item": "Item",
+      "category": "Category",
+      "type": "Type",
+      "points": "Points",
+      "target": "Target",
+      "xp": "XP",
+      "days": "Days",
+      "dailySchedule": "Curriculum",
+      "actions": "Actions",
+      "noTarget": "-"
+    },
+    "states": {
+      "emptyTitle": "No worship items yet",
+      "emptyDescription": "Create the first item to build the worship curriculum.",
+      "errorTitle": "Could not load worship schedule",
+      "errorDescription": "Refresh the data or try again in a moment."
+    },
+    "errors": {
+      "saveFailed": "Could not save the worship item.",
+      "categorySaveFailed": "Could not save the category."
+    }
+  },
+  "worshipLevels": {
+    "eyebrow": "Admin levels",
+    "title": "Worship levels",
+    "description": "Create and manage the worship levels that users can be assigned to and promoted through.",
+    "actions": {
+      "create": "Create level",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "deactivating": "Deactivating...",
+      "retry": "Try again",
+      "save": "Save level",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "assignUsers": "Assign users",
+      "customizeSchedule": "Customize user schedule"
+    },
+    "dialog": {
+      "createTitle": "Create worship level",
+      "editTitle": "Edit worship level",
+      "description": "Set the level name, order, and description. Curriculum assignment is managed separately."
+    },
+    "deactivate": {
+      "title": "Deactivate worship level",
+      "description": "Deactivate {{name}}? Users cannot be assigned to inactive levels.",
+    "confirm": "Deactivate level"
+  },
+  "assign": {
+    "title": "Assign {{level}}",
+    "description": "Choose the users who should follow this worship level. The previous active level will be closed automatically.",
+    "searchPlaceholder": "Search users by name or email",
+    "loadingUsers": "Loading users...",
+    "emptyUsers": "No assignable users found.",
+    "currentLevel": "Current level: {{level}}",
+    "noCurrentLevel": "No active level",
+    "assignSelected": "Assign {{count}} selected",
+    "assigning": "Assigning...",
+    "error": "Could not assign this worship level."
+  },
+  "customize": {
+    "title": "Customize user worship schedule",
+    "description": "Add or remove worship items for one user without changing the base worship level.",
+    "searchPlaceholder": "Search users by name or email",
+    "emptyUsers": "No users found.",
+    "currentLevel": "Current level: {{level}}",
+    "noCurrentLevel": "No active level",
+    "pickUserTitle": "Choose a user first",
+    "pickUserDescription": "After selecting a user, you can add or remove items from their daily worship schedule.",
+    "loadError": "Could not load this user's worship schedule.",
+    "levelLine": "Assigned level: {{level}}",
+    "itemCount": "{{count}} items",
+    "currentSchedule": "Current schedule",
+    "availableToAdd": "Available to add",
+    "emptySchedule": "This user's schedule is currently empty.",
+    "noAvailableItems": "No more worship items are available to add.",
+    "points": "{{count}} pts",
+    "customBadge": "Custom",
+    "excludedBadge": "Removed",
+    "add": "Add",
+    "remove": "Remove",
+    "save": "Save schedule",
+    "saving": "Saving...",
+    "saveError": "Could not save this user's worship schedule."
+  },
+  "form": {
+      "name": "Name",
+      "namePlaceholder": "Level name",
+      "order": "Order",
+      "description": "Description",
+      "descriptionPlaceholder": "Optional description",
+      "isActive": "Level is active"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "title": "Level directory",
+      "description": "Manage active and inactive worship levels from one place.",
+      "order": "Order",
+      "name": "Name",
+      "descriptionColumn": "Description",
+      "requirements": "Curriculum items",
+      "users": "Assigned users",
+      "status": "Status",
+      "actions": "Actions",
+      "noDescription": "No description"
+    },
+    "states": {
+      "emptyTitle": "No worship levels yet",
+      "emptyDescription": "Create the first worship level to start assigning users.",
+      "errorTitle": "Could not load worship levels",
+      "errorDescription": "Refresh the data or try again in a moment."
+    },
+    "errors": {
+      "nameExists": "A worship level with this name already exists.",
+      "orderExists": "A worship level with this order already exists.",
+      "validation": "Check the level details and try again.",
+      "saveFailed": "Could not save the worship level.",
+      "hasActiveUsers": "This level still has {{count}} active users. Move users to another level before deactivating it.",
+      "notFound": "This worship level no longer exists.",
+      "deactivateFailed": "Could not deactivate this worship level."
+    }
+  }
+}

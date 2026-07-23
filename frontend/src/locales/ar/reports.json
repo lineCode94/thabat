@@ -1,0 +1,200 @@
+{
+  "eyebrow": "التقارير",
+  "title": "تقارير التقدم",
+  "description": "مساحة هادئة لمراجعة التقدم اليومي والأسبوعي والشهري والسنوي دون ضغط أو مقارنة.",
+  "back": "العودة إلى التقارير",
+  "placeholderDescription": "هذه الصفحة محجوزة لمسار التقارير القادم.",
+  "types": {
+    "daily": {
+      "title": "التقارير اليومية",
+      "description": "راجع إنجاز العبادة والنقاط والسلسلة والثبات اليومي."
+    },
+    "weekly": {
+      "title": "التقارير الأسبوعية",
+      "description": "تابع إنجاز الأسبوع وملاحظات المتابع واتجاهات التقدم."
+    },
+    "monthly": {
+      "title": "التقارير الشهرية",
+      "description": "قارن الثبات الشهري ونمو النقاط والمهام وتوازن العبادات."
+    },
+    "yearly": {
+      "title": "التقارير السنوية",
+      "placeholderTitle": "التقرير السنوي",
+      "description": "شاهد السلاسل طويلة المدى والإنجازات ومحطات الرحلة السنوية."
+    },
+    "dailyPlaceholder": {
+      "title": "التقرير اليومي"
+    },
+    "weeklyPlaceholder": {
+      "title": "التقرير الأسبوعي"
+    },
+    "monthlyPlaceholder": {
+      "title": "التقرير الشهري"
+    }
+  },
+  "weekly": {
+    "eyebrow": "التقرير الأسبوعي",
+    "title": "تقرير التقدم الأسبوعي",
+    "description": "راجع آخر أسبوع مغلق وتنقل بين التقارير الأسبوعية السابقة.",
+    "descriptionForUser": "مراجعة التقدم الأسبوعي للمستخدم {{name}}.",
+    "actions": {
+      "retry": "إعادة المحاولة"
+    },
+    "navigator": {
+      "label": "الأسبوع المحدد",
+      "previous": "الأسبوع السابق",
+      "next": "الأسبوع التالي"
+    },
+    "summary": {
+      "xpEarned": "النقاط المكتسبة",
+      "consistencyPercentage": "الثبات",
+      "worshipCompletionPercentage": "إنجاز العبادة"
+    },
+    "breakdown": {
+      "title": "تفصيل العبادات",
+      "description": "نسبة الإنجاز لكل عبادة خلال هذا الأسبوع المغلق.",
+      "item": "العبادة",
+      "completed": "الإنجاز",
+      "score": "الدرجة",
+      "completion": "النسبة",
+      "searchPlaceholder": "ابحث في العبادات",
+      "categorySummary": "{{completed}} / {{total}} مكتمل · {{percent}}%",
+      "uncategorized": "بدون تصنيف",
+      "noMatchesTitle": "لا توجد عبادات مطابقة",
+      "noMatchesDescription": "جرّب كلمة بحث أخرى للوصول إلى عبادة داخل هذا التقرير.",
+      "completedValue": "{{completed}} / {{total}}",
+      "scoreValue": "{{earned}} / {{total}}",
+      "emptyTitle": "لا توجد سجلات عبادة",
+      "emptyDescription": "لا يحتوي هذا التقرير الأسبوعي على نشاط عبادات.",
+      "notes": "الملاحظات",
+      "categoryTotal": "إجمالي القسم",
+      "completedDay": "مكتمل",
+      "missedDay": "غير مكتمل",
+      "notAssignedDay": "غير مطلوب في هذا اليوم",
+      "categoryNames": {
+        "fajr": "الفجر"
+      }
+    },
+    "viewedUser": {
+      "reportFor": "تقرير {{name}}",
+      "personalReport": "تقريرك الشخصي",
+      "personalDescription": "أنت تعرض تقدمك الأسبوعي الشخصي."
+    },
+    "streak": {
+      "title": "حالة السلسلة",
+      "currentValue": "{{count}} يوم",
+      "longestValue": "أطول سلسلة: {{count}} يوم",
+      "noStatus": "لا توجد حالة"
+    },
+    "comparison": {
+      "title": "مقارنة بالأسبوع السابق",
+      "description": "يظهر هنا الفرق فقط عن الأسبوع السابق.",
+      "xpDelta": "تغير النقاط",
+      "consistencyDelta": "تغير الثبات",
+      "completionDelta": "تغير الإنجاز"
+    },
+    "mentorFeedback": {
+      "title": "ملاحظات المتابع",
+      "rating": "التقييم: {{rating}}",
+      "recommendation": "التوصية"
+    },
+    "userSearch": {
+      "title": "عرض مستخدم آخر",
+      "description": "ابحث داخل المستخدمين المسموح لك بمراجعتهم.",
+      "label": "المستخدم",
+      "placeholder": "ابحث بالاسم أو البريد الإلكتروني",
+      "selected": "يتم عرض تقرير {{name}}"
+    },
+    "states": {
+      "weekNotClosedTitle": "هذا الأسبوع لم يُغلق بعد",
+      "weekNotClosedDescription": "ارجع بعد انتهاء الأسبوع. الأسابيع المعاد فتحها تحتفظ بالتقرير المجمد فقط إذا كان قد تم إنشاؤه مسبقًا.",
+      "forbiddenTitle": "التقرير غير متاح",
+      "forbiddenDescription": "ليست لديك صلاحية لعرض التقرير الأسبوعي لهذا المستخدم.",
+      "errorTitle": "تعذر تحميل التقرير الأسبوعي",
+      "errorDescription": "حدث خطأ أثناء تحميل هذا التقرير."
+    }
+  },
+  "shared": {
+    "metrics": {
+      "xpEarned": "النقاط المكتسبة",
+      "consistencyPercentage": "الثبات",
+      "worshipCompletionPercentage": "إنجاز العبادة",
+      "completedScore": "الدرجة / {{total}}"
+    },
+    "breakdown": {
+      "title": "تفصيل العبادات",
+      "description": "نسبة الإنجاز لكل عبادة خلال فترة التقرير.",
+      "item": "العبادة",
+      "category": "البند",
+      "completed": "الإنجاز",
+      "score": "الدرجة",
+      "completion": "النسبة",
+      "completedValue": "{{completed}} / {{total}}",
+      "scoreValue": "{{earned}} / {{total}}",
+      "emptyTitle": "لا توجد سجلات عبادة",
+      "emptyDescription": "لا يحتوي هذا التقرير على نشاط عبادات بعد.",
+      "searchPlaceholder": "ابحث في العبادات",
+      "categorySummary": "{{completed}} / {{total}} مكتمل · {{percent}}%",
+      "uncategorized": "بدون تصنيف",
+      "noMatchesTitle": "لا توجد عبادات مطابقة",
+      "noMatchesDescription": "جرّب كلمة بحث أخرى داخل هذا التقرير."
+    },
+    "rewards": {
+      "title": "المكافآت المكتسبة",
+      "emptyTitle": "لا توجد مكافآت في هذه الفترة",
+      "emptyDescription": "ستظهر هنا الأوسمة والإنجازات والمهام المكتملة.",
+      "types": {
+        "badges": "وسام",
+        "achievements": "إنجاز",
+        "missions": "مهمة"
+      }
+    }
+  },
+  "daily": {
+    "eyebrow": "التقرير اليومي",
+    "title": "تقرير عبادة اليوم",
+    "description": "راجع درجة يوم واحد ونسبة الإنجاز والمكافآت والمهام وتفصيل العبادات.",
+    "states": {
+      "emptyTitle": "لا يوجد تسجيل لهذا اليوم",
+      "emptyDescription": "بعد حفظ عبادة اليوم سيظهر هنا السكور والمكافآت والتفصيل.",
+      "errorTitle": "تعذر تحميل التقرير اليومي",
+      "errorDescription": "حدث خطأ أثناء تحميل هذا التقرير اليومي."
+    },
+    "scoreLine": "درجة اليوم: {{score}} / {{total}}",
+    "statusDescription": "عرض مركز لدرجة اليوم والمكافآت والملاحظات وتفصيل العبادات.",
+    "status": {
+      "OPEN": "مفتوح",
+      "CLOSED": "مغلق",
+      "REOPENED": "معاد فتحه"
+    },
+    "insights": {
+      "streak": "السلسلة الحالية",
+      "streakHint": "سلسلة العبادة النشطة لديك.",
+      "rewards": "مكافآت اليوم",
+      "rewardsHint": "الأوسمة والإنجازات والمهام المكتسبة اليوم.",
+      "notes": "ملاحظات اليوم",
+      "noNotes": "لا توجد ملاحظات مضافة لهذا اليوم."
+    }
+  },
+  "monthly": {
+    "eyebrow": "التقرير الشهري",
+    "title": "تقرير التقدم الشهري",
+    "description": "راجع الثبات الشهري ودرجة العبادة والمكافآت والمهام المكتملة وأقوى وأضعف الأيام.",
+    "monthSummary": "إجمالي الشهر من العبادات والأوسمة والإنجازات والمهام.",
+    "bestDay": "أفضل يوم",
+    "weakestDay": "أضعف يوم",
+    "dayScore": "{{score}} / {{total}} درجة",
+    "states": {
+      "errorTitle": "تعذر تحميل التقرير الشهري",
+      "errorDescription": "حدث خطأ أثناء تحميل هذا التقرير الشهري."
+    },
+    "calendar": {
+      "title": "تقويم الشهر",
+      "description": "كل يوم يعرض الدرجة ونسبة الإنجاز وكثافة النشاط في الشهر المحدد.",
+      "emptyTitle": "لا يوجد نشاط يومي بعد",
+      "emptyDescription": "ستظهر بطاقات الأيام هنا بعد حفظ المتابعة.",
+      "dayTitle": "{{date}} · {{percent}}% مكتمل",
+      "items": "{{completed}} / {{total}} بند"
+    }
+  }
+}

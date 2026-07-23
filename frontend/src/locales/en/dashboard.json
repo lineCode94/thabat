@@ -1,0 +1,118 @@
+{
+  "title": "Dashboard",
+  "subtitle": "A calm view of today's worship progress.",
+  "errorTitle": "Failed to load dashboard",
+  "errorDescription": "There was a problem fetching your data.",
+  "todaySummary": "Today's Summary",
+  "todaysCompletion": "Today's Completion",
+  "todaysXp": "Today's XP",
+  "remainingWorship": "Remaining Worship",
+  "todaysGoal": "Today's Goal",
+  "goalReady": "Keep today's worship close and simple.",
+  "completedItems": "Completed Items",
+  "remainingItems": "Remaining Items",
+  "completed": "Completed",
+  "worshipItems": "Worship Items",
+  "remainingToday": "Remaining Today",
+  "remainingSummary": "{{count}} items left. Finish them from Today's Worship.",
+  "openTodayWorship": "Open Today's Worship",
+  "moreRemaining": "+{{count}} more items in Today's Worship",
+  "moreCompleted": "+{{count}} more completed",
+  "allCaughtUp": "All caught up.",
+  "noCompletedYet": "No items completed yet today.",
+  "track": "Track",
+  "emptyTitle": "You're ready to begin today's journey.",
+  "emptyDescription": "Start with one small act of worship and let the day build from there.",
+  "emptyCta": "Go to Tracking",
+  "readiness": {
+    "ONBOARDING_INCOMPLETE": {
+      "title": "Your setup is almost ready",
+      "description": "Your account still needs region setup before today's worship can be prepared."
+    },
+    "NO_ACTIVE_WORSHIP_LEVEL": {
+      "title": "No active worship level",
+      "description": "Your account does not have an active worship level yet. Please contact your mentor or administrator."
+    },
+    "NO_LEVEL_REQUIREMENTS": {
+      "title": "No requirements configured",
+      "description": "Your current worship level does not have requirements configured yet."
+    },
+    "NO_WORSHIP_ITEMS_CONFIGURED": {
+      "title": "No worship items available",
+      "description": "The requirements for your level do not currently point to active worship items."
+    }
+  },
+  "upcomingReminders": "Upcoming Reminders",
+  "remindersComingSoon": "Reminders feature is coming soon.",
+  "reminders": {
+    "daily": "Daily reminder",
+    "weekly": "Weekly reminder",
+    "quietHours": "Quiet hours",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "none": "Not set"
+  },
+  "weekProgress": {
+    "title": "This week's progress",
+    "activeDays": "Active days",
+    "points": "Points",
+    "consistency": "Consistency"
+  },
+  "recentNotifications": {
+    "title": "Latest notifications",
+    "viewAll": "View all",
+    "empty": "No notifications yet."
+  },
+  "advice": {
+    "openTracking": "Open tracking",
+    "excellent": {
+      "title": "Strong day",
+      "description": "You are close to a complete day. Keep the same rhythm and finish gently."
+    },
+    "steady": {
+      "title": "Good progress",
+      "description": "Your day is moving well. Pick one remaining item and keep the momentum."
+    },
+    "start": {
+      "title": "Start small",
+      "description": "Begin with the easiest worship item. A small start makes the rest lighter."
+    },
+    "empty": {
+      "title": "Ready when you are",
+      "description": "Your worship list is prepared. Open tracking when the day begins."
+    }
+  },
+  "thisWeek": "This Week",
+  "thisMonth": "This Month",
+  "daysCompleted": "{{completed}} of {{total}} days completed",
+  "daysCompletedThisMonth": "{{completed}} of {{total}} days completed this month",
+  "missions": {
+    "eyebrow": "Weekly rewards",
+    "title": "Missions",
+    "pendingBadge": "{{count}} pending",
+    "weekly": "This week",
+    "monthly": "This month",
+    "xp": "Mission XP",
+    "allDone": "All assigned missions are complete.",
+    "pendingHint": "{{count}} mission awaits completion and bonus XP.",
+    "open": "Open missions"
+  },
+  "level": {
+    "journey": "Your Journey",
+    "currentLevel": "Current Level",
+    "totalXp": "Total XP: {{xp}}",
+    "xpToLevel": "{{xp}} XP to Level {{level}}"
+  },
+  "streak": {
+    "title": "Daily Streak",
+    "label": "Streak",
+    "best": "Best: {{days}} days",
+    "lastTracked": "Last tracked: {{date}}",
+    "statuses": {
+      "ACTIVE": "Active",
+      "AT_RISK": "At Risk",
+      "BROKEN": "Broken",
+      "NEW": "Get Started"
+    }
+  }
+}

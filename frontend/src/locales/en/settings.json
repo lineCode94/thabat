@@ -1,0 +1,15 @@
+{
+  "title": "Settings",
+  "description": "Manage your account settings and preferences.",
+  "themeTitle": "Theme Settings",
+  "themeDescription": "Customize the appearance of the application.",
+  "toggleDarkMode": "Toggle Dark Mode",
+  "soundTitle": "Sound Settings",
+  "soundDescription": "Control interaction and reward sounds in the app.",
+  "soundEffects": "App sound effects",
+  "soundEffectsHint": "Play subtle sounds when moving through tracking, finishing the day, and earning badges.",
+  "profileUpdated": "Profile updated successfully",
+  "profileUpdateFailed": "Failed to update profile",
+  "passwordChanged": "Password changed successfully",
+  "passwordChangeFailed": "Failed to change password"
+}

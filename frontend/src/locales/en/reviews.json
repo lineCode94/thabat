@@ -1,0 +1,46 @@
+{
+  "mentor": {
+    "eyebrow": "Weekly reviews",
+    "title": "Mentor reviews",
+    "description": "Review assigned weekly progress, save drafts, and complete final feedback when ready.",
+    "userIdLabel": "User ID",
+    "userIdPlaceholder": "Enter assigned user ID",
+    "initialize": "Initialize"
+  },
+  "user": {
+    "eyebrow": "Mentor feedback",
+    "title": "My weekly reviews",
+    "description": "Read completed weekly reviews shared by your mentor.",
+    "detailTitle": "Weekly review"
+  },
+  "detail": {
+    "title": "Weekly review"
+  },
+  "status": {
+    "PENDING": "Pending",
+    "DRAFT": "Draft",
+    "COMPLETED": "Completed"
+  },
+  "labels": {
+    "weeklyReview": "Weekly review",
+    "weekOf": "Week of {{date}}"
+  },
+  "fields": {
+    "comment": "Comment",
+    "privateNotes": "Private notes",
+    "rating": "Rating",
+    "recommendation": "Recommendation",
+    "promotionSuggestion": "Promotion suggestion"
+  },
+  "actions": {
+    "saveDraft": "Save draft",
+    "complete": "Complete review"
+  },
+  "states": {
+    "emptyTitle": "No reviews yet",
+    "emptyDescription": "Initialize a current weekly review for an assigned user when you are ready.",
+    "emptyUserTitle": "No completed reviews yet",
+    "emptyUserDescription": "Completed mentor reviews will appear here.",
+    "error": "We could not load weekly reviews."
+  }
+}

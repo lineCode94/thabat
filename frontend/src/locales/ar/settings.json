@@ -1,0 +1,15 @@
+{
+  "title": "الإعدادات",
+  "description": "إدارة إعدادات حسابك وتفضيلاتك.",
+  "themeTitle": "إعدادات المظهر",
+  "themeDescription": "خصص مظهر التطبيق.",
+  "toggleDarkMode": "تبديل الوضع الداكن",
+  "soundTitle": "إعدادات الصوت",
+  "soundDescription": "تحكم في أصوات التفاعل والمكافآت داخل التطبيق.",
+  "soundEffects": "أصوات التطبيق",
+  "soundEffectsHint": "تشغيل أصوات خفيفة عند التنقل وإنهاء اليوم وكسب الأوسمة.",
+  "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+  "profileUpdateFailed": "فشل تحديث الملف الشخصي",
+  "passwordChanged": "تم تغيير كلمة المرور بنجاح",
+  "passwordChangeFailed": "فشل تغيير كلمة المرور"
+}

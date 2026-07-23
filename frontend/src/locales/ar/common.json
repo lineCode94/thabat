@@ -1,0 +1,26 @@
+{
+  "appName": "THABAT",
+  "actions": {
+    "cancel": "إلغاء",
+    "collapse": "طي",
+    "done": "تم",
+    "retry": "حاول مرة أخرى",
+    "save": "حفظ",
+    "search": "بحث"
+  },
+  "states": {
+    "loading": "جار التحميل...",
+    "notFound": "الصفحة التي تبحث عنها غير موجودة.",
+    "unknownItem": "عنصر غير معروف"
+  },
+  "home": {
+    "description": "منصة رحلة إيمانية تركز على الثبات والتشجيع والتقدم الهادف.",
+    "getStarted": "ابدأ الآن"
+  },
+  "units": {
+    "count": "عدد",
+    "days": "أيام",
+    "minutes": "دقائق",
+    "xp": "نقطة"
+  }
+}

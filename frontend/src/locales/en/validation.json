@@ -1,0 +1,16 @@
+{
+  "invalidEmail": "Invalid email address",
+  "passwordRequired": "Password is required",
+  "fullNameMin": "Full name must be at least 2 characters",
+  "passwordMin": "Password must be at least 8 characters",
+  "passwordUppercase": "Password must contain at least one uppercase letter",
+  "passwordNumber": "Password must contain at least one number",
+  "passwordRequirements": "Password requirements",
+  "passwordMinShort": "At least 8 characters",
+  "passwordUppercaseShort": "One uppercase letter",
+  "passwordNumberShort": "One number",
+  "passwordMatch": "Passwords do not match",
+  "nameMin": "Name must be at least 2 characters",
+  "invalidUrl": "Invalid URL",
+  "currentPasswordRequired": "Current password is required"
+}

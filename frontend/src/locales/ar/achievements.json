@@ -1,0 +1,55 @@
+{
+  "title": "الإنجازات",
+  "failed": "فشل تحميل الإنجازات",
+  "emptyTitle": "لا توجد إنجازات بعد",
+  "emptyDescription": "ابدأ متابعة عبادتك لفتح الإنجازات.",
+  "unlockedCount": "{{unlocked}} من {{total}} مفتوحة",
+  "complete": "{{percent}}% مكتمل",
+  "recentlyUnlocked": "المفتوحة حديثًا",
+  "closeDialog": "إغلاق النافذة",
+  "unlockedOn": "فُتح في {{date}}",
+  "categories": {
+    "Getting Started": "البداية",
+    "Streak": "الثبات",
+    "XP": "النقاط",
+    "Prayer": "الصلاة",
+    "Quran": "القرآن",
+    "Mission": "المهام",
+    "General": "عام"
+  },
+  "states": {
+    "UNLOCKED": "مفتوح",
+    "IN_PROGRESS": "قيد التقدم",
+    "LOCKED": "مغلق"
+  },
+  "items": {
+    "First Tracking": {
+      "name": "أول متابعة",
+      "description": "سجّل أول يوم متابعة لعبادتك."
+    },
+    "7 Day Streak": {
+      "name": "ثبات 7 أيام",
+      "description": "أكمل 7 أيام متتالية من متابعة العبادة."
+    },
+    "30 Day Streak": {
+      "name": "ثبات 30 يومًا",
+      "description": "أكمل 30 يومًا متتاليًا من متابعة العبادة."
+    },
+    "1000 XP": {
+      "name": "1000 نقطة",
+      "description": "اجمع 1000 نقطة من أنشطة العبادة."
+    },
+    "100 Prayers Logged": {
+      "name": "100 صلاة مسجلة",
+      "description": "أكمل بنود الصلاة 100 مرة."
+    },
+    "500 Quran Pages": {
+      "name": "500 صفحة قرآن",
+      "description": "سجّل 500 صفحة قرآن إجمالًا عبر المتابعات."
+    },
+    "First Weekly Mission": {
+      "name": "أول مهمة أسبوعية",
+      "description": "أكمل أول مهمة أسبوعية لك."
+    }
+  }
+}

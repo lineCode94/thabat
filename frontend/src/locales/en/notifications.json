@@ -1,0 +1,81 @@
+{
+  "title": "Notifications",
+  "preferences": "Notification Preferences",
+  "open": "Open notifications",
+  "unread": "{{count}} unread",
+  "markAllAsRead": "Mark all read",
+  "markAllAsReadTitle": "Mark all as read",
+  "markAsRead": "Mark as read",
+  "viewAll": "View all notifications",
+  "loadFailed": "Failed to load notifications",
+  "empty": "No notifications yet",
+  "caughtUp": "You're all caught up.",
+  "preferencesDescription": "Control which notifications you receive.",
+  "preferencesFullDescription": "Control which notifications you receive. Critical system messages cannot be disabled.",
+  "preferencesSaved": "Notification preferences saved.",
+  "preferencesSaveFailed": "Failed to save preferences. Please try again.",
+  "preferencesLoadFailed": "Could not load preferences.",
+  "channels": "Channels",
+  "emailNotifications": "Email Notifications",
+  "emailDescription": "Receive important updates via email.",
+  "inAppNotifications": "In-App Notifications",
+  "inAppDescription": "Receive notifications within the app.",
+  "categories": "Categories",
+  "dailyReminders": "Daily Reminders",
+  "dailyRemindersDescription": "Remind me to complete today's worship tracking.",
+  "weeklyReminders": "Weekly Review Reminders",
+  "weeklyRemindersDescription": "Notify when a weekly review summary is available.",
+  "achievementNotifications": "Achievement & Badge Notifications",
+  "achievementDescription": "Celebrate unlocking new badges and achievements.",
+  "missionNotifications": "Mission Notifications",
+  "missionDescription": "Updates about assigned and completed missions.",
+  "reminderTiming": "Reminder Timing",
+  "dailyReminderTime": "Daily Reminder Time",
+  "quietHours": "Quiet Hours",
+  "quietHoursDescription": "Leave empty to disable quiet hours.",
+  "start": "Start",
+  "end": "End",
+  "discard": "Discard",
+  "savePreferences": "Save Preferences",
+  "center": {
+    "eyebrow": "Notification Center",
+    "title": "Notifications",
+    "description": "View every update, celebration, mission event, reminder, and mentor message in one place.",
+    "stats": {
+      "total": "Total",
+      "unread": "Unread",
+      "read": "Read"
+    },
+    "filters": {
+      "title": "Filters",
+      "description": "Search and narrow the notification list without losing history.",
+      "search": "Search notifications"
+    },
+    "types": {
+      "ALL": "All types",
+      "ACHIEVEMENT": "Achievements",
+      "BADGE": "Badges",
+      "REMINDER": "Reminders",
+      "MENTOR": "Mentor",
+      "MISSION_ASSIGNED": "Mission assigned",
+      "MISSION_COMPLETED": "Mission completed",
+      "ADMINISTRATIVE": "Administrative"
+    },
+    "readStatus": {
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read"
+    },
+    "list": {
+      "title": "Notification history",
+      "description": "Latest updates appear first."
+    },
+    "states": {
+      "emptyDescription": "Important updates, badges, achievements, and missions will appear here.",
+      "errorDescription": "Refresh the page or try again in a moment."
+    },
+    "actions": {
+      "retry": "Try again"
+    }
+  }
+}

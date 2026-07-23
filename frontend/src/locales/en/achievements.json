@@ -1,0 +1,55 @@
+{
+  "title": "Achievements",
+  "failed": "Failed to load achievements",
+  "emptyTitle": "No achievements yet",
+  "emptyDescription": "Start tracking your worship to unlock achievements.",
+  "unlockedCount": "{{unlocked}} of {{total}} unlocked",
+  "complete": "{{percent}}% complete",
+  "recentlyUnlocked": "Recently Unlocked",
+  "closeDialog": "Close dialog",
+  "unlockedOn": "Unlocked {{date}}",
+  "categories": {
+    "Getting Started": "Getting Started",
+    "Streak": "Streak",
+    "XP": "XP",
+    "Prayer": "Prayer",
+    "Quran": "Quran",
+    "Mission": "Mission",
+    "General": "General"
+  },
+  "states": {
+    "UNLOCKED": "Unlocked",
+    "IN_PROGRESS": "In progress",
+    "LOCKED": "Locked"
+  },
+  "items": {
+    "First Tracking": {
+      "name": "First Tracking",
+      "description": "Record your very first day of worship tracking."
+    },
+    "7 Day Streak": {
+      "name": "7 Day Streak",
+      "description": "Complete 7 consecutive days of worship tracking."
+    },
+    "30 Day Streak": {
+      "name": "30 Day Streak",
+      "description": "Complete 30 consecutive days of worship tracking."
+    },
+    "1000 XP": {
+      "name": "1000 XP",
+      "description": "Earn a total of 1,000 XP through worship activities."
+    },
+    "100 Prayers Logged": {
+      "name": "100 Prayers Logged",
+      "description": "Complete prayer worship items 100 times."
+    },
+    "500 Quran Pages": {
+      "name": "500 Quran Pages",
+      "description": "Log a total of 500 Quran pages across all tracking sessions."
+    },
+    "First Weekly Mission": {
+      "name": "First Weekly Mission",
+      "description": "Complete your first weekly mission."
+    }
+  }
+}

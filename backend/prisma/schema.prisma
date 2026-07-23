@@ -1,0 +1,671 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Core Identity & RBAC
+// ---------------------------------------------------------------------------
+
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users           User[]           @relation("UserRole")
+  rolePermissions RolePermission[] @relation("RolePermissionRole")
+
+  @@index([isActive])
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  module      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rolePermissions RolePermission[] @relation("RolePermissionPermission")
+
+  @@index([module])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String   @id @default(uuid()) @db.Uuid
+  roleId       String   @db.Uuid
+  permissionId String   @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  role       Role       @relation("RolePermissionRole", fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation("RolePermissionPermission", fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model Region {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  users     User[]     @relation("UserRegion")
+  auditLogs AuditLog[] @relation("RegionAuditLogs")
+
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("regions")
+}
+
+enum OnboardingStatus {
+  PENDING_SETUP
+  ACTIVE
+}
+
+model User {
+  id               String           @id @default(uuid()) @db.Uuid
+  fullName         String
+  email            String           @unique
+  passwordHash     String
+  roleId           String           @db.Uuid
+  regionId         String           @db.Uuid
+  onboardingStatus OnboardingStatus @default(PENDING_SETUP)
+  phone            String?
+  avatarUrl        String?
+  isActive         Boolean          @default(true)
+  timezone         String           @default("Africa/Cairo")
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  deletedAt        DateTime?
+
+  role   Role   @relation("UserRole", fields: [roleId], references: [id], onDelete: Restrict)
+  region Region @relation("UserRegion", fields: [regionId], references: [id], onDelete: Restrict)
+
+  mentorAssignmentsAsMentor      MentorAssignment[]        @relation("MentorAssignmentMentor")
+  mentorAssignmentsAsStudent     MentorAssignment[]        @relation("MentorAssignmentStudent")
+  userLevels                     UserLevel[]               @relation("UserLevelUser")
+  userLevelsPromoted             UserLevel[]               @relation("UserLevelPromotedBy")
+  mentorNotesAsMentor            MentorNote[]              @relation("MentorNoteMentor")
+  mentorNotesAsStudent           MentorNote[]              @relation("MentorNoteStudent")
+  weeklyReviewsAsMentor          WeeklyReview[]            @relation("WeeklyReviewMentor")
+  weeklyReviewsAsUser            WeeklyReview[]            @relation("WeeklyReviewUser")
+  promotionRecommendations       PromotionRecommendation[] @relation("PromotionRecommendedBy")
+  promotionRecommendationsAsUser PromotionRecommendation[]
+  promotionApprovals             PromotionRecommendation[] @relation("PromotionApprovedBy")
+  promotionDeclines              PromotionRecommendation[] @relation("PromotionDeclinedBy")
+  customRequirements             UserCustomRequirement[]   @relation("UserCustomRequirements")
+  excludedRequirements           UserExcludedRequirement[] @relation("UserExcludedRequirements")
+  createdWorshipItems            WorshipItem[]             @relation("UserCreatedWorshipItems")
+  trackingDays                   TrackingDay[]             @relation("UserTrackingDays")
+  userBadges                     UserBadge[]               @relation("UserUserBadges")
+  userAchievements               UserAchievement[]         @relation("UserUserAchievements")
+  userMissions                   UserMission[]             @relation("UserUserMissions")
+  xpTransactions                 XPTransaction[]           @relation("UserXPTransactions")
+  journeyEvents                  JourneyEvent[]            @relation("UserJourneyEvents")
+  notifications                  Notification[]            @relation("UserNotifications")
+  notificationPreference         NotificationPreference?   @relation("UserNotificationPreference")
+  reports                        Report[]                  @relation("UserReports")
+  auditLogs                      AuditLog[]                @relation("UserAuditLogs")
+
+  @@index([roleId])
+  @@index([regionId])
+  @@index([onboardingStatus])
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+// ---------------------------------------------------------------------------
+// Audit
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id                 String   @id @default(uuid()) @db.Uuid
+  actorId            String?  @db.Uuid
+  actorSnapshotId    String?
+  actorSnapshotName  String?
+  actorSnapshotEmail String?
+  action             String
+  targetType         String
+  targetId           String?
+  regionId           String?  @db.Uuid
+  metadata           Json?
+  createdAt          DateTime @default(now())
+
+  actor  User?   @relation("UserAuditLogs", fields: [actorId], references: [id], onDelete: SetNull)
+  region Region? @relation("RegionAuditLogs", fields: [regionId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([action])
+  @@index([targetType, targetId])
+  @@index([regionId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ---------------------------------------------------------------------------
+// Mentorship & Journey
+// ---------------------------------------------------------------------------
+
+model MentorAssignment {
+  id         String   @id @default(uuid()) @db.Uuid
+  mentorId   String   @db.Uuid
+  userId     String   @db.Uuid
+  assignedAt DateTime @default(now()) @db.Date
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  mentor  User @relation("MentorAssignmentMentor", fields: [mentorId], references: [id], onDelete: Restrict)
+  student User @relation("MentorAssignmentStudent", fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([mentorId])
+  @@index([userId])
+  @@index([isActive])
+  @@index([mentorId, isActive])
+  @@index([userId, isActive])
+  @@map("mentor_assignments")
+}
+
+model WorshipLevel {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  order       Int       @unique
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  userLevels     UserLevel[]               @relation("WorshipLevelUserLevels")
+  requirements   LevelRequirement[]        @relation("WorshipLevelRequirements")
+  promotionsFrom PromotionRecommendation[] @relation("PromotionPreviousLevel")
+  promotionsTo   PromotionRecommendation[] @relation("PromotionNextLevel")
+
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("worship_levels")
+}
+
+model UserLevel {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  levelId      String   @db.Uuid
+  assignedAt   DateTime @default(now()) @db.Date
+  isActive     Boolean  @default(true)
+  promotedById String?  @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         User         @relation("UserLevelUser", fields: [userId], references: [id], onDelete: Restrict)
+  worshipLevel WorshipLevel @relation("WorshipLevelUserLevels", fields: [levelId], references: [id], onDelete: Restrict)
+  promotedBy   User?        @relation("UserLevelPromotedBy", fields: [promotedById], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([levelId])
+  @@index([isActive])
+  @@index([userId, isActive])
+  @@index([promotedById])
+  @@map("user_levels")
+}
+
+model MentorNote {
+  id        String    @id @default(uuid()) @db.Uuid
+  mentorId  String    @db.Uuid
+  userId    String    @db.Uuid
+  content   String
+  noteDate  DateTime? @db.Date
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  mentor  User @relation("MentorNoteMentor", fields: [mentorId], references: [id], onDelete: Restrict)
+  student User @relation("MentorNoteStudent", fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([mentorId])
+  @@index([userId])
+  @@index([noteDate])
+  @@index([mentorId, userId])
+  @@map("mentor_notes")
+}
+
+enum WeeklyReviewStatus {
+  PENDING
+  DRAFT
+  COMPLETED
+}
+
+model WeeklyReview {
+  id                  String             @id @default(uuid()) @db.Uuid
+  mentorId            String             @db.Uuid
+  userId              String             @db.Uuid
+  weekStartDate       DateTime           @db.Date
+  status              WeeklyReviewStatus @default(PENDING)
+  comment             String?
+  privateNotes        String?
+  rating              Int?
+  recommendation      String?
+  promotionSuggestion Boolean            @default(false)
+  completedAt         DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  mentor User @relation("WeeklyReviewMentor", fields: [mentorId], references: [id], onDelete: Restrict)
+  user   User @relation("WeeklyReviewUser", fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, weekStartDate])
+  @@index([mentorId])
+  @@index([userId])
+  @@index([weekStartDate])
+  @@index([status])
+  @@map("weekly_reviews")
+}
+
+enum PromotionStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
+model PromotionRecommendation {
+  id                String          @id @default(uuid()) @db.Uuid
+  userId            String          @db.Uuid
+  recommendedById   String          @db.Uuid
+  previousLevelId   String          @db.Uuid
+  nextLevelId       String          @db.Uuid
+  status            PromotionStatus @default(PENDING)
+  readinessSnapshot Json
+  reason            String?
+  decisionNotes     String?
+  approvedById      String?         @db.Uuid
+  approvedAt        DateTime?
+  declinedById      String?         @db.Uuid
+  declinedAt        DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  user          User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  recommendedBy User         @relation("PromotionRecommendedBy", fields: [recommendedById], references: [id], onDelete: Restrict)
+  previousLevel WorshipLevel @relation("PromotionPreviousLevel", fields: [previousLevelId], references: [id], onDelete: Restrict)
+  nextLevel     WorshipLevel @relation("PromotionNextLevel", fields: [nextLevelId], references: [id], onDelete: Restrict)
+  approvedBy    User?        @relation("PromotionApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+  declinedBy    User?        @relation("PromotionDeclinedBy", fields: [declinedById], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([recommendedById])
+  @@index([previousLevelId])
+  @@index([nextLevelId])
+  @@index([status])
+  @@map("promotion_recommendations")
+}
+
+// ---------------------------------------------------------------------------
+// Worship & Requirements
+// ---------------------------------------------------------------------------
+
+model WorshipCategory {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
+  description String?
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  worshipItems WorshipItem[] @relation("CategoryWorshipItems")
+
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("worship_categories")
+}
+
+model WorshipItem {
+  id          String    @id @default(uuid()) @db.Uuid
+  categoryId  String    @db.Uuid
+  createdByUserId String? @db.Uuid
+  title       String
+  description String?
+  icon        String?
+  inputType   String
+  targetType  String?
+  targetValue Int?
+  daysOfWeek  Int[]     @default([])
+  order       Int       @default(0)
+  score       Int       @default(0)
+  xp          Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  category               WorshipCategory         @relation("CategoryWorshipItems", fields: [categoryId], references: [id], onDelete: Restrict)
+  createdByUser          User?                   @relation("UserCreatedWorshipItems", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  levelRequirements      LevelRequirement[]      @relation("WorshipItemLevelRequirements")
+  userCustomRequirements UserCustomRequirement[] @relation("WorshipItemUserCustomRequirements")
+  userExcludedRequirements UserExcludedRequirement[] @relation("WorshipItemUserExcludedRequirements")
+  trackingEntries        TrackingEntry[]         @relation("WorshipItemTrackingEntries")
+
+  @@index([categoryId])
+  @@index([createdByUserId])
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("worship_items")
+}
+
+model LevelRequirement {
+  id            String   @id @default(uuid()) @db.Uuid
+  levelId       String   @db.Uuid
+  worshipItemId String   @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  worshipLevel WorshipLevel @relation("WorshipLevelRequirements", fields: [levelId], references: [id], onDelete: Restrict)
+  worshipItem  WorshipItem  @relation("WorshipItemLevelRequirements", fields: [worshipItemId], references: [id], onDelete: Restrict)
+
+  @@unique([levelId, worshipItemId])
+  @@index([levelId])
+  @@index([worshipItemId])
+  @@map("level_requirements")
+}
+
+model UserCustomRequirement {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid
+  worshipItemId String   @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user        User        @relation("UserCustomRequirements", fields: [userId], references: [id], onDelete: Cascade)
+  worshipItem WorshipItem @relation("WorshipItemUserCustomRequirements", fields: [worshipItemId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, worshipItemId])
+  @@index([userId])
+  @@index([worshipItemId])
+  @@map("user_custom_requirements")
+}
+
+model UserExcludedRequirement {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid
+  worshipItemId String   @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user        User        @relation("UserExcludedRequirements", fields: [userId], references: [id], onDelete: Cascade)
+  worshipItem WorshipItem @relation("WorshipItemUserExcludedRequirements", fields: [worshipItemId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, worshipItemId])
+  @@index([userId])
+  @@index([worshipItemId])
+  @@map("user_excluded_requirements")
+}
+
+// ---------------------------------------------------------------------------
+// Tracking
+// ---------------------------------------------------------------------------
+
+model TrackingDay {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  date      DateTime @db.Date
+  status    String   @default("OPEN")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user            User            @relation("UserTrackingDays", fields: [userId], references: [id], onDelete: Cascade)
+  trackingEntries TrackingEntry[] @relation("TrackingDayEntries")
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("tracking_days")
+}
+
+model TrackingEntry {
+  id            String   @id @default(uuid()) @db.Uuid
+  trackingDayId String   @db.Uuid
+  worshipItemId String   @db.Uuid
+  isCompleted   Boolean  @default(false)
+  count         Int?
+  duration      Int?
+  notes         String?
+  scoreEarned   Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  trackingDay TrackingDay @relation("TrackingDayEntries", fields: [trackingDayId], references: [id], onDelete: Cascade)
+  worshipItem WorshipItem @relation("WorshipItemTrackingEntries", fields: [worshipItemId], references: [id], onDelete: Restrict)
+
+  @@unique([trackingDayId, worshipItemId])
+  @@index([trackingDayId])
+  @@index([worshipItemId])
+  @@map("tracking_entries")
+}
+
+// ---------------------------------------------------------------------------
+// Gamification & Journey
+// ---------------------------------------------------------------------------
+
+model Badge {
+  id          String    @id @default(uuid()) @db.Uuid
+  key         String    @unique
+  name        String    @unique
+  description String?
+  iconUrl     String?
+  category    String    @default("General")
+  rarity      String    @default("Common")
+  isVisible   Boolean   @default(true)
+  condition   Json?
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  userBadges UserBadge[] @relation("BadgeUserBadges")
+
+  @@index([category])
+  @@index([rarity])
+  @@index([isVisible])
+  @@index([deletedAt])
+  @@map("badges")
+}
+
+model UserBadge {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  badgeId   String   @db.Uuid
+  earnedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation("UserUserBadges", fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation("BadgeUserBadges", fields: [badgeId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([badgeId])
+  @@map("user_badges")
+}
+
+model Achievement {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
+  description String?
+  iconUrl     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  userAchievements UserAchievement[] @relation("AchievementUserAchievements")
+
+  @@index([deletedAt])
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid
+  achievementId String   @db.Uuid
+  earnedAt      DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user        User        @relation("UserUserAchievements", fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation("AchievementUserAchievements", fields: [achievementId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@map("user_achievements")
+}
+
+model Mission {
+  id          String    @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  bonusXP     Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  userMissions UserMission[] @relation("MissionUserMissions")
+
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("missions")
+}
+
+model UserMission {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @db.Uuid
+  missionId      String    @db.Uuid
+  progress       Int       @default(0)
+  completed      Boolean   @default(false)
+  completionDate DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user    User    @relation("UserUserMissions", fields: [userId], references: [id], onDelete: Cascade)
+  mission Mission @relation("MissionUserMissions", fields: [missionId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, missionId])
+  @@index([userId])
+  @@index([missionId])
+  @@map("user_missions")
+}
+
+model XPTransaction {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  amount     Int
+  reason     String
+  sourceType String?
+  sourceId   String?  @db.Uuid
+  createdAt  DateTime @default(now())
+
+  user User @relation("UserXPTransactions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sourceType, sourceId])
+  @@index([userId])
+  @@map("xp_transactions")
+}
+
+model JourneyEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  eventType String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation("UserJourneyEvents", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("journey_events")
+}
+
+// ---------------------------------------------------------------------------
+// Notifications & Reports
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  title     String
+  message   String
+  type      String
+  priority  String    @default("MEDIUM")
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  metadata  Json?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @unique @db.Uuid
+  // Channel controls
+  email           Boolean  @default(true)
+  inApp           Boolean  @default(true)
+  // Category controls (critical/ADMINISTRATIVE cannot be disabled — enforced at service layer)
+  dailyReminders  Boolean  @default(true)
+  weeklyReminders Boolean  @default(true)
+  achievements    Boolean  @default(true)
+  missions        Boolean  @default(true)
+  // Reminder time in user's local timezone (HH:MM 24h format)
+  reminderTime    String   @default("07:30")
+  // Quiet hours (null means disabled)
+  quietHoursStart String?
+  quietHoursEnd   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation("UserNotificationPreference", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+model Report {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @db.Uuid
+  type            String
+  periodStartDate DateTime? @db.Date
+  periodEndDate   DateTime? @db.Date
+  data            Json
+  createdAt       DateTime  @default(now())
+
+  user User @relation("UserReports", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, periodStartDate])
+  @@index([userId])
+  @@index([type])
+  @@index([periodStartDate])
+  @@map("reports")
+}

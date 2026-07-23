@@ -1,0 +1,30 @@
+{
+  "eyebrow": "مستوى العبادة",
+  "title": "توصيات الترقية",
+  "description": "قيّم جاهزية مستوى العبادة وأدر توصيات الترقية المعتمدة بشريًا.",
+  "userIdPlaceholder": "أدخل معرف المستخدم المعين",
+  "readinessTitle": "جاهزية الترقية",
+  "criteriaTitle": "معايير الجاهزية",
+  "reasonPlaceholder": "سبب التوصية",
+  "decisionNotesPlaceholder": "ملاحظات القرار",
+  "actions": {
+    "evaluate": "تقييم الجاهزية",
+    "createRecommendation": "إنشاء توصية",
+    "approve": "اعتماد الترقية",
+    "decline": "رفض"
+  },
+  "status": {
+    "PENDING": "قيد الانتظار",
+    "APPROVED": "معتمدة",
+    "DECLINED": "مرفوضة"
+  },
+  "criteria": {
+    "CONSISTENCY": "الثبات",
+    "TIME_AT_LEVEL": "المدة في المستوى الحالي",
+    "COMPLETED_REVIEWS": "المراجعات الأسبوعية المكتملة",
+    "MENTOR_SUGGESTION": "اقتراح المتابع"
+  },
+  "states": {
+    "error": "تعذر تحميل بيانات الترقية."
+  }
+}

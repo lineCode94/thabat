@@ -1,0 +1,81 @@
+{
+  "title": "الإشعارات",
+  "preferences": "تفضيلات الإشعارات",
+  "open": "فتح الإشعارات",
+  "unread": "{{count}} غير مقروءة",
+  "markAllAsRead": "تحديد الكل كمقروء",
+  "markAllAsReadTitle": "تحديد كل الإشعارات كمقروءة",
+  "markAsRead": "تحديد كمقروء",
+  "viewAll": "عرض كل الإشعارات",
+  "loadFailed": "تعذر تحميل الإشعارات",
+  "empty": "لا توجد إشعارات بعد",
+  "caughtUp": "أنت على اطلاع كامل.",
+  "preferencesDescription": "تحكم في الإشعارات التي تستقبلها.",
+  "preferencesFullDescription": "تحكم في الإشعارات التي تستقبلها. لا يمكن تعطيل رسائل النظام المهمة.",
+  "preferencesSaved": "تم حفظ تفضيلات الإشعارات.",
+  "preferencesSaveFailed": "تعذر حفظ التفضيلات. حاول مرة أخرى.",
+  "preferencesLoadFailed": "تعذر تحميل التفضيلات.",
+  "channels": "القنوات",
+  "emailNotifications": "إشعارات البريد الإلكتروني",
+  "emailDescription": "استقبل التحديثات المهمة عبر البريد الإلكتروني.",
+  "inAppNotifications": "إشعارات داخل التطبيق",
+  "inAppDescription": "استقبل الإشعارات داخل التطبيق.",
+  "categories": "الفئات",
+  "dailyReminders": "التذكيرات اليومية",
+  "dailyRemindersDescription": "ذكرني بإكمال متابعة عبادة اليوم.",
+  "weeklyReminders": "تذكيرات المراجعة الأسبوعية",
+  "weeklyRemindersDescription": "أعلمني عند توفر ملخص المراجعة الأسبوعية.",
+  "achievementNotifications": "إشعارات الإنجازات والأوسمة",
+  "achievementDescription": "احتفل بفتح أوسمة وإنجازات جديدة.",
+  "missionNotifications": "إشعارات المهام",
+  "missionDescription": "تحديثات حول المهام المسندة والمكتملة.",
+  "reminderTiming": "وقت التذكير",
+  "dailyReminderTime": "وقت التذكير اليومي",
+  "quietHours": "ساعات الهدوء",
+  "quietHoursDescription": "اتركها فارغة لتعطيل ساعات الهدوء.",
+  "start": "البداية",
+  "end": "النهاية",
+  "discard": "تجاهل",
+  "savePreferences": "حفظ التفضيلات",
+  "center": {
+    "eyebrow": "مركز الإشعارات",
+    "title": "الإشعارات",
+    "description": "كل التحديثات والاحتفالات والمهام والتذكيرات ورسائل المتابع في مكان واحد.",
+    "stats": {
+      "total": "الإجمالي",
+      "unread": "غير مقروء",
+      "read": "مقروء"
+    },
+    "filters": {
+      "title": "الفلاتر",
+      "description": "ابحث وفلتر الإشعارات مع الحفاظ على السجل.",
+      "search": "ابحث في الإشعارات"
+    },
+    "types": {
+      "ALL": "كل الأنواع",
+      "ACHIEVEMENT": "الإنجازات",
+      "BADGE": "الأوسمة",
+      "REMINDER": "التذكيرات",
+      "MENTOR": "المتابع",
+      "MISSION_ASSIGNED": "مهمة مسندة",
+      "MISSION_COMPLETED": "مهمة مكتملة",
+      "ADMINISTRATIVE": "إداري"
+    },
+    "readStatus": {
+      "all": "الكل",
+      "unread": "غير مقروء",
+      "read": "مقروء"
+    },
+    "list": {
+      "title": "سجل الإشعارات",
+      "description": "تظهر أحدث التحديثات أولًا."
+    },
+    "states": {
+      "emptyDescription": "ستظهر هنا التحديثات المهمة والأوسمة والإنجازات والمهام.",
+      "errorDescription": "حدث الصفحة أو حاول مرة أخرى بعد لحظات."
+    },
+    "actions": {
+      "retry": "حاول مرة أخرى"
+    }
+  }
+}

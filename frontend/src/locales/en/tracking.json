@@ -1,0 +1,148 @@
+{
+  "title": "Daily Tracking",
+  "today": "Today",
+  "description": "Mark today's worship, counters, and progress. Scores are calculated automatically when you save.",
+  "saved": "Tracking saved successfully",
+  "saveFailed": "Failed to save tracking",
+  "saving": "Saving...",
+  "saveTracking": "Save Tracking",
+  "worshipLibrary": "Worship Library",
+  "worshipDescription": "Browse all worship categories and activities.",
+  "loadFailed": "Failed to load worship data",
+  "connectionProblem": "There was a problem connecting to the server.",
+  "emptyCategories": "No worship categories found.",
+  "emptyCategoriesDescription": "Ask your administrator to add categories and items.",
+  "checklist": {
+    "title": "Today's worship checklist",
+    "description": "Complete each item once it is done. Counter items complete only when they reach their target.",
+    "completed": "Completed",
+    "score": "Score",
+    "progress": "Progress",
+    "item": "Worship item",
+    "action": "Tracking",
+    "points": "Points",
+    "status": "Status",
+    "done": "Done",
+    "pending": "Pending"
+  },
+  "flow": {
+    "pageProgress": "{{current}} of {{total}}",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "previous": "Previous",
+    "next": "Next",
+    "finishDay": "Finish day",
+    "saveNote": "Tracking is saved when you finish the day.",
+    "score": "Score",
+    "progress": "Progress",
+    "items": "Items",
+    "pointsValue": "{{points}} pts",
+    "prayerNoteLabel": "Comment for {{prayer}}",
+    "prayerNoteHint": "Add context for your mentor, such as why a congregation prayer was missed.",
+    "prayerNotePlaceholder": "Example: I missed congregation because I was at work."
+  },
+  "lowProgress": {
+    "title": "Progress needs support",
+    "message": "Your score was below 50% on {{count}} days this week. I recommend contacting your mentor so they can help you understand what got in the way and plan a steadier next day."
+  },
+  "customize": {
+    "addButton": "Add worship",
+    "addTitle": "Add worship to today",
+    "addDescription": "Choose an item from the worship library and it will appear in your daily checklist.",
+    "searchPlaceholder": "Search worship items",
+    "clearSearch": "Clear search",
+    "noAvailableItems": "No more worship items are available to add.",
+    "points": "{{points}} pts",
+    "close": "Close",
+    "saved": "Your worship schedule was updated.",
+    "saveFailed": "Could not update your worship schedule.",
+    "removeItem": "Remove {{item}}",
+    "customTitleLabel": "Write your own item for {{category}}",
+    "customTitlePlaceholder": "Example: First row",
+    "customTitleHint": "This item is private to your daily worship schedule and starts with 0 points.",
+    "createCustom": "Add custom",
+    "created": "Custom worship item added.",
+    "createFailed": "Could not add this custom worship item."
+  },
+  "week": {
+    "todayOpen": "Current tracking day",
+    "todayCompleted": "Today's tracking is saved",
+    "weekRange": "Week: {{range}}",
+    "dayScore": "Day score",
+    "editToday": "Edit today",
+    "open": "Open",
+    "locked": "Locked",
+    "scoreShort": "{{score}} pts",
+    "completedLabel": "Day complete",
+    "completedTitle": "Today's worship is saved",
+    "completedDescription": "Your score has been calculated. The rest of the week stays visible, and only the current tracking day can be edited."
+  },
+  "rewards": {
+    "kicker": "Today's rewards",
+    "title": "Badges and achievements",
+    "description": "These are the rewards your worship unlocked today.",
+    "empty": "No new badges or achievements today yet. Keep going.",
+    "badge": "Badge",
+    "achievement": "Achievement",
+    "links": {
+      "missions": {
+        "title": "Mission rewards",
+        "description": "Check weekly and monthly mission prizes."
+      },
+      "weekly": {
+        "title": "Weekly progress",
+        "description": "Review this week's score and consistency."
+      },
+      "monthly": {
+        "title": "Monthly journey",
+        "description": "See badges, achievements, and month totals."
+      }
+    }
+  },
+  "encouragement": {
+    "tapToContinue": "Tap to continue",
+    "high": {
+      "label": "Beautiful consistency",
+      "messages": [
+        "\"أحب الأعمال إلى الله أدومها وإن قل\" (متفق عليه) — ثباتك النهاردة هو عين المطلوب، استمر عليه.",
+        "يوم مكتمل بفضل الله، واصل — فالثبات على الطاعة من أعظم النعم.",
+        "\"إن الله يحب إذا عمل أحدكم عملاً أن يتقنه\" (رواه البيهقي) — كده يا بطل، إتقان حقيقي."
+      ]
+    },
+    "medium": {
+      "label": "A steady step",
+      "messages": [
+        "\"استقيموا ولن تحصوا\" — ما حد يقدر يكمّل كل حاجة، المهم إنك على الطريق. كمّل بكرة.",
+        "من كلام السلف: \"ليس الشأن أن تعمل، الشأن أن يُتقبّل منك\" — خطوة كويسة، النية أهم من العدد.",
+        "\"بداية طيبة، واذكر قول النبي ﷺ: 'السداد والمقاربة' — قارب واجتهد ولو ما وصلتش للكمال.\"",
+        "نص الطريق أحسن من الوقوف — استمر وربنا يبارك في المتبقي."
+      ]
+    },
+    "low": {
+      "label": "A meaningful start",
+      "messages": [
+        "\"لا تحقرن من المعروف شيئًا\" (رواه مسلم) — اللي عملته النهاردة مش قليل، وبكرة فرصة تزيد.",
+        "من كلام ابن القيم رحمه الله: \"من علامة النجاح تدارك التقصير لا الحزن عليه\" — يلا يا بطل، بكرة يوم جديد.",
+        "الاستمرار أهم من الكمال — جرب تاني بكرة، والله غفور رحيم."
+      ]
+    }
+  },
+  "readiness": {
+    "ONBOARDING_INCOMPLETE": {
+      "title": "Your setup is almost ready",
+      "description": "Your account still needs region setup before today's worship can be prepared."
+    },
+    "NO_ACTIVE_WORSHIP_LEVEL": {
+      "title": "No active worship level",
+      "description": "Your account does not have an active worship level yet. Please contact your mentor or administrator."
+    },
+    "NO_LEVEL_REQUIREMENTS": {
+      "title": "No requirements configured",
+      "description": "Your current worship level does not have requirements configured yet."
+    },
+    "NO_WORSHIP_ITEMS_CONFIGURED": {
+      "title": "No worship items available",
+      "description": "The requirements for your level do not currently point to active worship items."
+    }
+  }
+}
