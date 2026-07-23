@@ -15,6 +15,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    allowedHosts: ['grimace-drove-exact.ngrok-free.dev'],
     proxy: {
       '/api': {
         target: 'http://localhost:5001',
