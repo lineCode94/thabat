@@ -9,10 +9,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { GamificationService } from '../services/gamification.service';
 
 const STATUS_CONFIG = {
-  ACTIVE: { bg: 'from-orange-500 to-rose-600', text: 'text-orange-100' },
-  AT_RISK: { bg: 'from-yellow-500 to-amber-600', text: 'text-yellow-100' },
-  BROKEN: { bg: 'from-slate-500 to-slate-700', text: 'text-slate-200' },
-  NEW: { bg: 'from-orange-500 to-violet-600', text: 'text-orange-100' },
+  ACTIVE: { accent: 'hsl(var(--neo-lime))', icon: 'hsl(var(--neo-yellow))' },
+  AT_RISK: { accent: 'hsl(var(--neo-yellow))', icon: 'hsl(var(--neo-yellow))' },
+  BROKEN: { accent: 'hsl(var(--muted-foreground))', icon: 'hsl(var(--muted-foreground))' },
+  NEW: { accent: 'hsl(var(--neo-cyan))', icon: 'hsl(var(--neo-yellow))' },
 };
 
 export function StreakCard() {
@@ -43,14 +43,20 @@ export function StreakCard() {
   const config = STATUS_CONFIG[streak.streakStatus] ?? STATUS_CONFIG.NEW;
 
   return (
-    <Card className={`relative overflow-hidden border-none bg-gradient-to-br ${config.bg} text-white shadow-lg`}>
-      <div className="absolute -bottom-4 -end-4 opacity-10">
+    <Card className="relative overflow-hidden border-2 border-foreground/80 bg-[linear-gradient(135deg,hsl(var(--card))_0%,hsl(var(--neo-yellow)/0.20)_48%,hsl(var(--neo-cyan)/0.14)_100%)] text-foreground shadow-[8px_8px_0_hsl(var(--neo-shadow)/0.72)]">
+      <div className="absolute -bottom-4 -end-4 opacity-10" style={{ color: config.icon }}>
         <Flame size={100} />
       </div>
+      <div className="absolute inset-x-0 bottom-0 h-2" style={{ background: config.accent }} />
 
       <CardHeader className="relative z-10 pb-0">
-        <CardTitle className={`flex items-center gap-2 text-sm font-medium uppercase tracking-wider ${config.text}`}>
-          <Flame size={16} className="text-white" />
+        <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-primary rtl:normal-case rtl:tracking-normal">
+          <span
+            className="flex size-8 items-center justify-center rounded-xl border border-foreground/70 text-slate-950 shadow-[3px_3px_0_hsl(var(--neo-shadow)/0.6)]"
+            style={{ background: config.accent }}
+          >
+            <Flame size={16} />
+          </span>
           {t('dashboard:streak.title')}
         </CardTitle>
       </CardHeader>
@@ -61,7 +67,7 @@ export function StreakCard() {
             <AnimatePresence mode="wait">
               <motion.span
                 key={streak.currentStreak}
-                className="text-5xl font-bold"
+                className="text-5xl font-black text-foreground"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
@@ -70,16 +76,16 @@ export function StreakCard() {
                 {streak.currentStreak}
               </motion.span>
             </AnimatePresence>
-            <span className={`ms-2 text-sm font-medium ${config.text}`}>{t('common:units.days')}</span>
+            <span className="ms-2 text-sm font-bold text-muted-foreground">{t('common:units.days')}</span>
           </div>
 
-          <div className={`flex items-center gap-1 text-end text-sm font-medium ${config.text}`}>
+          <div className="flex items-center gap-1 rounded-xl border border-foreground/20 bg-background/45 px-3 py-2 text-end text-sm font-bold text-foreground/85">
             <Trophy size={14} />
             {t('dashboard:streak.best', { days: streak.longestStreak })}
           </div>
         </div>
 
-        <div className={`text-xs font-semibold uppercase tracking-wide ${config.text}`}>
+        <div className="text-xs font-black uppercase tracking-wide text-muted-foreground rtl:normal-case rtl:tracking-normal">
           {t(`dashboard:streak.statuses.${streak.streakStatus}`, {
             defaultValue: t('dashboard:streak.statuses.NEW'),
           })}
