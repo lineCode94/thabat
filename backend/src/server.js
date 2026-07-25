@@ -6,12 +6,14 @@ import { startReminderJobs, stopReminderJobs } from '#jobs/reminder.jobs.js';
 import { logger } from '#lib/logger.js';
 import { connectDatabase, disconnectDatabase } from '#lib/prisma.js';
 
+const PORT = process.env.PORT || env.SERVER_PORT;
+
 async function startServer() {
   try {
     await connectDatabase();
 
-    const server = app.listen(env.SERVER_PORT, () => {
-      logger.info(`THABAT API running on port ${env.SERVER_PORT} [${env.NODE_ENV}]`);
+    const server = app.listen(PORT, () => {
+      logger.info(`THABAT API running on port ${PORT} [${env.NODE_ENV}]`);
       if (env.NODE_ENV !== 'test') {
         startReminderJobs();
       }
