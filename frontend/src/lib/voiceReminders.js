@@ -85,3 +85,13 @@ export async function speakArabicReminder(text) {
   }).catch(() => {});
   return true;
 }
+
+export async function playHusaryBismillah() {
+  if (!isSoundEnabled()) return false;
+  return new Promise((resolve) => {
+    const audio = new Audio('https://everyayah.com/data/Husary_128kbps/001001.mp3');
+    audio.onended = () => resolve(true);
+    audio.onerror = () => resolve(false);
+    audio.play().catch(() => resolve(false));
+  });
+}

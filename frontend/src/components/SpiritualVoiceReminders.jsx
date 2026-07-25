@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { speakArabicReminder } from '@/lib/voiceReminders';
+import { speakArabicReminder, playHusaryBismillah } from '@/lib/voiceReminders';
 
 const WELCOME_SESSION_KEY = 'thabat:welcome-voice-played';
 const PRAYER_REMINDER_INTERVAL_MS = 3 * 60 * 1000;
@@ -22,7 +22,7 @@ export function SpiritualVoiceReminders({ enabled = false }) {
 
     const playWelcome = async () => {
       if (window.sessionStorage.getItem(WELCOME_SESSION_KEY) === 'true') return true;
-      const didAttempt = await speakWhenPossible('بسم الله الرحمن الرحيم');
+      const didAttempt = await playHusaryBismillah();
       if (didAttempt) {
         window.sessionStorage.setItem(WELCOME_SESSION_KEY, 'true');
       }
