@@ -163,14 +163,15 @@ export class OnboardingService {
 
     const activeUserLevel = await this.getActiveUserLevel(userId, client);
 
-    if (user.role?.code === ROLES.USER && user.onboardingStatus !== ONBOARDING_STATUS.ACTIVE) {
-      return {
-        ready: false,
-        reason: TODAY_WORSHIP_READINESS.ONBOARDING_INCOMPLETE,
-        worshipLevel: activeUserLevel?.worshipLevel ?? null,
-        items: [],
-      };
-    }
+    // Allow users to see default daily worship even if they are in PENDING_SETUP
+    // if (user.role?.code === ROLES.USER && user.onboardingStatus !== ONBOARDING_STATUS.ACTIVE) {
+    //   return {
+    //     ready: false,
+    //     reason: TODAY_WORSHIP_READINESS.ONBOARDING_INCOMPLETE,
+    //     worshipLevel: activeUserLevel?.worshipLevel ?? null,
+    //     items: [],
+    //   };
+    // }
 
     if (!activeUserLevel) {
       return {
