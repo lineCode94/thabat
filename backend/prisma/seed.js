@@ -5,8 +5,8 @@ import { hashPassword } from '../src/lib/hash.js';
 import { prisma } from '../src/lib/prisma.js';
 import { PermissionService } from '../src/services/permission.service.js';
 
-const DEV_ADMIN_EMAIL = 'dev-admin@example.local';
-const DEV_ADMIN_PASSWORD = 'dev-only-seed-password-change-me';
+const DEV_ADMIN_EMAIL = 'admin@gmail.com';
+const DEV_ADMIN_PASSWORD = 'Islamic--12345';
 const DEVELOPMENT_REGION_NAME = 'Development Region';
 const FIRST_WORSHIP_LEVEL = {
   order: 1,
