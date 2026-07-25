@@ -6,15 +6,16 @@ WORKDIR /app
 COPY package*.json ./
 COPY backend/package.json ./backend/package.json
 
+# Install backend dependencies
 RUN npm ci --omit=dev --workspace=backend
 
-# Copy prisma schema and generate client
+# Copy Prisma schema and generate client
 COPY backend/prisma ./backend/prisma
 RUN npx prisma generate --schema=backend/prisma/schema.prisma
 
-# Copy the rest of the backend source
+# Copy backend source
 COPY backend ./backend
 
 EXPOSE 5000
 
-CMD npx prisma migrate deploy --schema=backend/prisma/schema.prisma && npm start --workspace=backend
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=backend/prisma/schema.prisma && npm start --workspace=backend"]
