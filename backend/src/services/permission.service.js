@@ -181,7 +181,10 @@ export class PermissionService {
     if (!user?.roleId) return [];
 
     const databasePermissions = await this.getPermissionsForRole(user.roleId);
-    return databasePermissions;
+    if (user.role?.isActive === false) return databasePermissions;
 
+    const defaultPermissions = ROLE_PERMISSION_MAP[user.role?.code] ?? [];
+
+    return [...new Set([...databasePermissions, ...defaultPermissions])];
   }
 }

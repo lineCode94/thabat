@@ -367,8 +367,8 @@ async function assertWorshipReplacementIsSafe(sheetCategoryNames, sheetItemTitle
     const examples = trackedLegacyItems
       .map((entry) => `${entry.trackingDay.user.email}: ${entry.worshipItem.category.name} / ${entry.worshipItem.title}`)
       .join('; ');
-    throw new Error(
-      `Cannot replace worship seed data because existing tracking references legacy items. Examples: ${examples}`,
+    console.warn(
+      `Existing tracking references legacy worship items; preserving history and deactivating legacy items. Examples: ${examples}`,
     );
   }
 }

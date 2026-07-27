@@ -20,6 +20,12 @@ function isItemAvailableToday(item, dayOfWeek) {
   return !item.daysOfWeek?.length || item.daysOfWeek.includes(dayOfWeek);
 }
 
+const RETIRED_DAILY_QURAN_ITEM_TITLES = new Set([
+  'قراءة الورد/حزب',
+  'تسميع القرآن',
+  'مراجعة/حفظ قرآن جديد',
+]);
+
 export class OnboardingService {
   static async getLowestActiveWorshipLevel(client = prisma) {
     return client.worshipLevel.findFirst({
@@ -101,6 +107,62 @@ export class OnboardingService {
     return this.createNormalUserOnboarding({ userId: user.id }, client);
   }
 
+  static async ensureDefaultLevelRequirements(worshipLevel, client = prisma) {
+    if (!worshipLevel || worshipLevel.order !== 1) {
+      return;
+    }
+
+    const [activeItems, currentRequirements] = await Promise.all([
+      client.worshipItem.findMany({
+        where: {
+          isActive: true,
+          deletedAt: null,
+          category: {
+            isActive: true,
+            deletedAt: null,
+          },
+        },
+        select: { id: true, title: true },
+      }),
+      client.levelRequirement.findMany({
+        where: { levelId: worshipLevel.id },
+        select: {
+          worshipItemId: true,
+          worshipItem: {
+            select: { title: true },
+          },
+        },
+      }),
+    ]);
+
+    const expectedItems = activeItems.filter((item) => !RETIRED_DAILY_QURAN_ITEM_TITLES.has(item.title));
+    const currentItemIds = new Set(currentRequirements.map((requirement) => requirement.worshipItemId));
+    const hasRetiredDailyQuranRequirement = currentRequirements.some((requirement) => (
+      RETIRED_DAILY_QURAN_ITEM_TITLES.has(requirement.worshipItem?.title)
+    ));
+    const hasMissingExpectedRequirement = expectedItems.some((item) => !currentItemIds.has(item.id));
+
+    if (!hasRetiredDailyQuranRequirement && !hasMissingExpectedRequirement) {
+      return;
+    }
+
+    await client.$transaction(async (tx) => {
+      await tx.levelRequirement.deleteMany({
+        where: { levelId: worshipLevel.id },
+      });
+
+      if (expectedItems.length > 0) {
+        await tx.levelRequirement.createMany({
+          data: expectedItems.map((item) => ({
+            levelId: worshipLevel.id,
+            worshipItemId: item.id,
+          })),
+          skipDuplicates: true,
+        });
+      }
+    });
+  }
+
   static async getMentorAssignmentStatus(userId, client = prisma) {
     const assignment = await client.mentorAssignment.findFirst({
       where: { userId, isActive: true },
@@ -170,6 +232,7 @@ export class OnboardingService {
     }
 
     const activeUserLevel = await this.ensureActiveUserLevel(user, client);
+    await this.ensureDefaultLevelRequirements(activeUserLevel?.worshipLevel, client);
 
     // Allow users to see default daily worship even if they are in PENDING_SETUP
     // if (user.role?.code === ROLES.USER && user.onboardingStatus !== ONBOARDING_STATUS.ACTIVE) {
