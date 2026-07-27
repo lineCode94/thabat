@@ -314,56 +314,91 @@ export class AdminUserService {
     return safeUser;
   }
 
-  static async softDelete(id, { actorId = null } = {}) {
+  static async hardDelete(id, { actorId = null } = {}) {
     const before = await this.findById(id);
 
     if (before.id === actorId) {
       throw ApiError.badRequest('You cannot delete your own account', 'CANNOT_DELETE_SELF');
     }
 
-    const user = await prisma.$transaction(async (tx) => {
-      await tx.mentorAssignment.updateMany({
+    await prisma.$transaction(async (tx) => {
+      await tx.promotionRecommendation.deleteMany({
+        where: {
+          OR: [
+            { userId: id },
+            { recommendedById: id },
+          ],
+        },
+      });
+
+      await tx.weeklyReview.deleteMany({
         where: {
           OR: [
             { userId: id },
             { mentorId: id },
           ],
-          isActive: true,
         },
-        data: { isActive: false },
+      });
+
+      await tx.mentorNote.deleteMany({
+        where: {
+          OR: [
+            { userId: id },
+            { mentorId: id },
+          ],
+        },
+      });
+
+      await tx.mentorAssignment.deleteMany({
+        where: {
+          OR: [
+            { userId: id },
+            { mentorId: id },
+          ],
+        },
+      });
+
+      await tx.userLevel.deleteMany({
+        where: { userId: id },
       });
 
       await tx.userLevel.updateMany({
-        where: { userId: id, isActive: true },
-        data: { isActive: false },
+        where: { promotedById: id },
+        data: { promotedById: null },
       });
 
-      return tx.user.update({
-        where: { id },
-        data: {
-          isActive: false,
-          deletedAt: new Date(),
+      await tx.promotionRecommendation.updateMany({
+        where: {
+          OR: [
+            { approvedById: id },
+            { declinedById: id },
+          ],
         },
-        include: ADMIN_USER_INCLUDE,
+        data: {
+          approvedById: null,
+          declinedById: null,
+        },
+      });
+
+      await tx.user.delete({
+        where: { id },
       });
     });
-
-    const safeUser = sanitizeUser(user);
 
     await AuditLogService.record({
       actorId,
       action: AUDIT_ACTIONS.USER_DELETED,
       targetType: AUDIT_TARGET_TYPES.USER,
-      targetId: safeUser.id,
-      regionId: safeUser.regionId,
+      targetId: before.id,
+      regionId: before.regionId,
       metadata: {
         email: before.email,
         roleId: before.roleId,
-        softDelete: true,
+        hardDelete: true,
       },
     });
 
-    return safeUser;
+    return sanitizeUser(before);
   }
 
   static async transferRegion(id, regionId, { actorId = null } = {}) {

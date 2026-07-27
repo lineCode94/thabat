@@ -60,7 +60,7 @@ const PERMISSION_LABELS = {
   'users.view_assigned': { ar: 'عرض المستخدمين المعيّنين', en: 'View assigned users' },
   'users.view_self': { ar: 'عرض الملف الشخصي', en: 'View own profile' },
   'users.create': { ar: 'إنشاء مستخدمين', en: 'Create users' },
-  'users.delete': { ar: 'حذف/أرشفة حسابات', en: 'Delete/archive users' },
+  'users.delete': { ar: 'حذف الحسابات نهائيًا', en: 'Permanently delete users' },
   'users.assign': { ar: 'تعيين المستخدمين للمتابعين', en: 'Assign users to mentors' },
   'users.transfer_region': { ar: 'نقل المستخدم بين المناطق', en: 'Transfer users between regions' },
   'users.transfer_mentor': { ar: 'نقل المستخدم بين المتابعين', en: 'Transfer users between mentors' },
@@ -173,7 +173,7 @@ const copy = {
     deleting: 'جار الحذف',
     deleted: 'تم حذف الحساب',
     deleteFailed: 'تعذر حذف الحساب',
-    confirmDelete: 'هل تريد حذف/أرشفة هذا الحساب؟',
+    confirmDelete: 'هل تريد حذف هذا الحساب نهائيًا من قاعدة البيانات؟',
   },
   en: {
     eyebrow: 'System Administration',
@@ -213,7 +213,7 @@ const copy = {
     deleting: 'Deleting',
     deleted: 'Account deleted',
     deleteFailed: 'Could not delete account',
-    confirmDelete: 'Delete/archive this account?',
+    confirmDelete: 'Permanently delete this account from the database?',
   },
 };
 

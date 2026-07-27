@@ -120,7 +120,7 @@ export class AdminUserController {
   }
 
   static async deleteUser(req, res) {
-    const user = await AdminUserService.softDelete(req.params.id, { actorId: req.user.id });
+    const user = await AdminUserService.hardDelete(req.params.id, { actorId: req.user.id });
 
     return ApiResponse.success(res, user, { message: 'User deleted' });
   }
