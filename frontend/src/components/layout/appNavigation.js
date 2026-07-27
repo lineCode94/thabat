@@ -51,13 +51,6 @@ export const appNavigation = [
         permissions: ['quran.manage_self'],
       },
       {
-        id: 'worship-library',
-        labelKey: 'layout:navigation.worshipLibrary',
-        icon: BookOpen,
-        to: '/worship',
-        permissions: ['worship.items.manage'],
-      },
-      {
         id: 'missions',
         labelKey: 'layout:navigation.missions',
         icon: Target,

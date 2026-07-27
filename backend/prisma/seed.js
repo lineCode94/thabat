@@ -18,6 +18,7 @@ const MOJIBAKE_PATTERN = /[ØÙ]/;
 const REMOVED_DAILY_QURAN_ITEM_TITLES = [
   'Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„ÙˆØ±Ø¯/Ø­Ø²Ø¨',
   'ØªØ³Ù…ÙŠØ¹ Ø§Ù„Ù‚Ø±Ø¢Ù†',
+  'Ù…Ø±Ø§Ø¬Ø¹Ø©/Ø­ÙØ¸ Ù‚Ø±Ø¢Ù† Ø¬Ø¯ÙŠØ¯',
 ];
 const RETIRED_DAILY_QURAN_BADGE_KEYS = [
   'daily_wird_recitation',
@@ -103,7 +104,6 @@ const MENTOR_WORSHIP_SHEET = [
       ['الجماعة الأولى (الفجر)', 5, 'BOOLEAN'],
       ['Ø£Ø°ÙƒØ§Ø± Ø¨Ø¹Ø¯ Ø§Ù„ØµÙ„Ø§Ø©', 2, 'BOOLEAN'],
       ['Ø£Ø°ÙƒØ§Ø± Ø§Ù„ØµØ¨Ø§Ø­', 2, 'BOOLEAN'],
-      ['Ù…Ø±Ø§Ø¬Ø¹Ø©/Ø­ÙØ¸ Ù‚Ø±Ø¢Ù† Ø¬Ø¯ÙŠØ¯', 2, 'BOOLEAN'],
     ],
   },
   {
@@ -554,6 +554,10 @@ async function seedFirstLevelRequirements(firstLevel) {
       deletedAt: null,
     },
     select: { id: true },
+  });
+
+  await prisma.levelRequirement.deleteMany({
+    where: { levelId: firstLevel.id },
   });
 
   await prisma.levelRequirement.createMany({
