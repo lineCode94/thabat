@@ -94,7 +94,7 @@ export class OnboardingService {
 
   static async ensureActiveUserLevel(user, client = prisma) {
     const activeUserLevel = await this.getActiveUserLevel(user.id, client);
-    if (activeUserLevel || user.role?.code !== ROLES.USER) {
+    if (activeUserLevel) {
       return activeUserLevel;
     }
 

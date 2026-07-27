@@ -137,7 +137,7 @@ export class AdminUserService {
   }
 
   static async create(data, { actorId = null } = {}) {
-    const role = await this.getRoleById(data.roleId);
+    await this.getRoleById(data.roleId);
     await this.getRegionById(data.regionId);
 
     const existingUser = await UserRepository.findByEmail(data.email);
@@ -161,9 +161,7 @@ export class AdminUserService {
         include: ADMIN_USER_INCLUDE,
       });
 
-      if (role.code === ROLES.USER) {
-        await OnboardingService.createNormalUserOnboarding({ userId: createdUser.id }, tx);
-      }
+      await OnboardingService.createNormalUserOnboarding({ userId: createdUser.id }, tx);
 
       return tx.user.findUnique({
         where: { id: createdUser.id },
@@ -215,13 +213,6 @@ export class AdminUserService {
 
         if (nextRole?.code && nextRole.code !== ROLES.USER && before.role?.code === ROLES.USER) {
           await tx.mentorAssignment.updateMany({
-            where: {
-              userId: id,
-              isActive: true,
-            },
-            data: { isActive: false },
-          });
-          await tx.userLevel.updateMany({
             where: {
               userId: id,
               isActive: true,
