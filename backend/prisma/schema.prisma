@@ -80,6 +80,11 @@ enum OnboardingStatus {
   ACTIVE
 }
 
+enum QuranTrackType {
+  MEMORIZING
+  REVIEWING
+}
+
 model User {
   id               String           @id @default(uuid()) @db.Uuid
   fullName         String
@@ -124,6 +129,8 @@ model User {
   notificationPreference         NotificationPreference?   @relation("UserNotificationPreference")
   reports                        Report[]                  @relation("UserReports")
   auditLogs                      AuditLog[]                @relation("UserAuditLogs")
+  quranProgress                  QuranProgress?            @relation("UserQuranProgress")
+  quranWeeklyLogs                QuranWeeklyLog[]          @relation("UserQuranWeeklyLogs")
 
   @@index([roleId])
   @@index([regionId])
@@ -459,6 +466,54 @@ model TrackingEntry {
   @@index([trackingDayId])
   @@index([worshipItemId])
   @@map("tracking_entries")
+}
+
+// ---------------------------------------------------------------------------
+// Quran Memorization & Review
+// ---------------------------------------------------------------------------
+
+model QuranProgress {
+  id                      String         @id @default(uuid()) @db.Uuid
+  userId                  String         @unique @db.Uuid
+  trackType               QuranTrackType
+  startingJuzMemorized    Decimal        @default(0) @db.Decimal(5, 2)
+  cumulativeJuzMemorized  Decimal        @default(0) @db.Decimal(5, 2)
+  weeklyTargetJuz         Decimal?       @db.Decimal(5, 2)
+  startedAt               DateTime       @db.Date
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  user       User              @relation("UserQuranProgress", fields: [userId], references: [id], onDelete: Cascade)
+  weeklyLogs QuranWeeklyLog[]  @relation("QuranProgressWeeklyLogs")
+
+  @@index([trackType])
+  @@map("quran_progress")
+}
+
+model QuranWeeklyLog {
+  id                    String         @id @default(uuid()) @db.Uuid
+  userId                String         @db.Uuid
+  quranProgressId       String         @db.Uuid
+  weekStartDate         DateTime       @db.Date
+  weekEndDate           DateTime       @db.Date
+  trackType             QuranTrackType
+  amountJuz             Decimal        @db.Decimal(5, 2)
+  cumulativeAfter       Decimal?       @db.Decimal(5, 2)
+  correctedAt           DateTime?
+  correctedById         String?        @db.Uuid
+  correctionReason      String?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  user          User          @relation("UserQuranWeeklyLogs", fields: [userId], references: [id], onDelete: Cascade)
+  quranProgress QuranProgress @relation("QuranProgressWeeklyLogs", fields: [quranProgressId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStartDate])
+  @@index([userId])
+  @@index([quranProgressId])
+  @@index([weekStartDate])
+  @@index([trackType])
+  @@map("quran_weekly_logs")
 }
 
 // ---------------------------------------------------------------------------

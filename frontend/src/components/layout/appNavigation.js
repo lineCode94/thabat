@@ -44,6 +44,13 @@ export const appNavigation = [
         permissions: ['tracking.manage_self'],
       },
       {
+        id: 'quran',
+        labelKey: 'layout:navigation.quran',
+        icon: BookOpen,
+        to: '/quran',
+        permissions: ['quran.manage_self'],
+      },
+      {
         id: 'worship-library',
         labelKey: 'layout:navigation.worshipLibrary',
         icon: BookOpen,

@@ -174,4 +174,23 @@ export class StreakService {
     }
     return longest;
   }
+
+  static hasConsecutiveWeeklyRun(weekStartDates, requiredWeeks = 2) {
+    if (weekStartDates.length < requiredWeeks) return false;
+
+    const weekSet = new Set(weekStartDates.map((date) => this._toDateStr(date)));
+
+    return weekStartDates.some((date) => {
+      let cursor = new Date(date);
+
+      for (let index = 0; index < requiredWeeks; index += 1) {
+        if (!weekSet.has(this._toDateStr(cursor))) {
+          return false;
+        }
+        cursor = this._subtractDays(cursor, 7);
+      }
+
+      return true;
+    });
+  }
 }

@@ -36,11 +36,18 @@ export class NotificationPreferenceService {
    * If no record exists, auto-creates one with sensible defaults (upsert pattern).
    */
   static async getPreferences(userId) {
-    const pref = await prisma.notificationPreference.upsert({
-      where: { userId },
-      create: { userId, ...DEFAULT_PREFERENCES },
-      update: {},
-    });
+    let pref;
+    try {
+      pref = await prisma.notificationPreference.upsert({
+        where: { userId },
+        create: { userId, ...DEFAULT_PREFERENCES },
+        update: {},
+      });
+    } catch (error) {
+      if (error.code !== 'P2002') throw error;
+      pref = await prisma.notificationPreference.findUnique({ where: { userId } });
+    }
+
     return formatPreferences(pref);
   }
 

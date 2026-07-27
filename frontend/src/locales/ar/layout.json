@@ -5,6 +5,7 @@
     "dashboard": "لوحة التحكم",
     "worship": "العبادات",
     "todayWorship": "عبادة اليوم",
+    "quran": "القرآن",
     "worshipLibrary": "مكتبة العبادات",
     "tracking": "المتابعة",
     "missions": "المهام",
@@ -47,6 +48,7 @@
   "breadcrumbs": {
     "dashboard": "لوحة التحكم",
     "tracking": "عبادة اليوم",
+    "quran": "القرآن",
     "worship": "مكتبة العبادات",
     "tools": "الأدوات",
     "tasbih": "السبحة",

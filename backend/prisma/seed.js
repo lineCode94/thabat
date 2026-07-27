@@ -15,6 +15,71 @@ const FIRST_WORSHIP_LEVEL = {
 };
 const FRIDAY = 5;
 const MOJIBAKE_PATTERN = /[ØÙ]/;
+const REMOVED_DAILY_QURAN_ITEM_TITLES = [
+  'Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„ÙˆØ±Ø¯/Ø­Ø²Ø¨',
+  'ØªØ³Ù…ÙŠØ¹ Ø§Ù„Ù‚Ø±Ø¢Ù†',
+];
+const RETIRED_DAILY_QURAN_BADGE_KEYS = [
+  'daily_wird_recitation',
+  'daily_quran_memorization',
+  'weekly_wird_consistency',
+  'quran_recitation_review',
+  'monthly_wird_consistency',
+  'monthly_quran_recitation_review',
+  'quran_khatm_604_pages',
+];
+const QURAN_BADGES = [
+  {
+    key: 'quran_weekly_consistency',
+    name: 'ثبات المراجعة الأسبوعية',
+    description: 'سجل تقدم القرآن أسبوعين متتاليين دون انقطاع.',
+    category: 'Quran',
+    rarity: 'Rare',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'weekly_log_streak', threshold: 2 },
+    sortOrder: 151,
+  },
+  {
+    key: 'quran_memorized_10_juz',
+    name: 'حافظ 10 أجزاء',
+    description: 'وصل إجمالي الحفظ إلى 10 أجزاء.',
+    category: 'Quran',
+    rarity: 'Rare',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'cumulative_juz_memorized', threshold: 10 },
+    sortOrder: 152,
+  },
+  {
+    key: 'quran_memorized_15_juz',
+    name: 'نصف القرآن',
+    description: 'وصل إجمالي الحفظ إلى 15 جزءًا.',
+    category: 'Quran',
+    rarity: 'Epic',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'cumulative_juz_memorized', threshold: 15 },
+    sortOrder: 153,
+  },
+  {
+    key: 'quran_memorized_20_juz',
+    name: 'حافظ 20 جزءًا',
+    description: 'وصل إجمالي الحفظ إلى 20 جزءًا.',
+    category: 'Quran',
+    rarity: 'Epic',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'cumulative_juz_memorized', threshold: 20 },
+    sortOrder: 154,
+  },
+  {
+    key: 'quran_memorized_30_juz',
+    name: 'ختم حفظ القرآن',
+    description: 'أكمل حفظ القرآن كاملًا.',
+    category: 'Quran',
+    rarity: 'Legendary',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'cumulative_juz_memorized', threshold: 30 },
+    sortOrder: 155,
+  },
+];
 
 function normalizeSeedText(value) {
   if (typeof value !== 'string' || !MOJIBAKE_PATTERN.test(value)) {
@@ -104,13 +169,6 @@ const MENTOR_WORSHIP_SHEET = [
       ['Ø§Ù„Ù‚ÙŠØ§Ù… Ø±ÙƒØ¹ØªÙŠÙ†', 4, 'BOOLEAN'],
       ['Ø§Ù„ÙˆØªØ±', 1, 'BOOLEAN'],
       ['Ø¯Ø¹Ø§Ø¡ Ø§Ù„ÙˆØªØ±', 2, 'BOOLEAN'],
-    ],
-  },
-  {
-    name: 'Ø§Ù„Ù‚Ø±Ø¢Ù†',
-    items: [
-      ['Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„ÙˆØ±Ø¯/Ø­Ø²Ø¨', 4, 'COUNT', 1],
-      ['ØªØ³Ù…ÙŠØ¹ Ø§Ù„Ù‚Ø±Ø¢Ù†', 2, 'BOOLEAN'],
     ],
   },
   {
@@ -278,9 +336,11 @@ function normalizeSeedItem(category, item, itemIndex) {
 }
 
 async function assertWorshipReplacementIsSafe(sheetCategoryNames, sheetItemTitles) {
+  const removedQuranTitles = REMOVED_DAILY_QURAN_ITEM_TITLES.map(normalizeSeedText);
   const trackedLegacyItems = await prisma.trackingEntry.findMany({
     where: {
       worshipItem: {
+        title: { notIn: removedQuranTitles },
         OR: [
           { title: { notIn: sheetItemTitles } },
           { category: { name: { notIn: sheetCategoryNames } } },
@@ -408,6 +468,85 @@ async function seedMentorWorshipSheet() {
   console.log(`Mentor worship sheet ensured: ${sheetCategories.length} categories, ${sheetItems.length} items`);
 }
 
+async function retireRemovedDailyQuranItems(firstLevel) {
+  const removedTitles = REMOVED_DAILY_QURAN_ITEM_TITLES.map(normalizeSeedText);
+  const removedItems = await prisma.worshipItem.findMany({
+    where: { title: { in: removedTitles } },
+    select: {
+      id: true,
+      title: true,
+      _count: { select: { trackingEntries: true } },
+    },
+  });
+
+  if (removedItems.length === 0) {
+    console.log('No removed Quran daily tracking items found.');
+    return;
+  }
+
+  const removedItemIds = removedItems.map((item) => item.id);
+
+  await prisma.levelRequirement.deleteMany({
+    where: {
+      levelId: firstLevel.id,
+      worshipItemId: { in: removedItemIds },
+    },
+  });
+
+  const itemsWithHistory = removedItems.filter((item) => item._count.trackingEntries > 0);
+  const itemsWithoutHistory = removedItems.filter((item) => item._count.trackingEntries === 0);
+
+  if (itemsWithHistory.length > 0) {
+    await prisma.worshipItem.updateMany({
+      where: { id: { in: itemsWithHistory.map((item) => item.id) } },
+      data: {
+        isActive: false,
+        deletedAt: new Date(),
+      },
+    });
+  }
+
+  if (itemsWithoutHistory.length > 0) {
+    await prisma.worshipItem.deleteMany({
+      where: { id: { in: itemsWithoutHistory.map((item) => item.id) } },
+    });
+  }
+
+  console.log(`Retired Quran daily tracking items: ${itemsWithHistory.length} deactivated, ${itemsWithoutHistory.length} deleted`);
+}
+
+async function seedQuranBadges() {
+  await prisma.badge.updateMany({
+    where: {
+      key: { in: RETIRED_DAILY_QURAN_BADGE_KEYS },
+      deletedAt: null,
+    },
+    data: {
+      isVisible: false,
+      deletedAt: new Date(),
+    },
+  });
+
+  for (const badge of QURAN_BADGES) {
+    await prisma.badge.upsert({
+      where: { key: badge.key },
+      update: {
+        name: badge.name,
+        description: badge.description,
+        category: badge.category,
+        rarity: badge.rarity,
+        isVisible: badge.isVisible,
+        condition: badge.condition,
+        sortOrder: badge.sortOrder,
+        deletedAt: null,
+      },
+      create: badge,
+    });
+  }
+
+  console.log(`Quran badges ensured: ${QURAN_BADGES.length} active, ${RETIRED_DAILY_QURAN_BADGE_KEYS.length} retired`);
+}
+
 async function seedFirstLevelRequirements(firstLevel) {
   const activeItems = await prisma.worshipItem.findMany({
     where: {
@@ -480,7 +619,9 @@ async function assignUsersWithoutActiveLevel(firstLevel) {
 async function main() {
   const firstLevel = await seedWorshipLevels();
   await seedMentorWorshipSheet();
+  await retireRemovedDailyQuranItems(firstLevel);
   await seedFirstLevelRequirements(firstLevel);
+  await seedQuranBadges();
   await seedDevelopmentAdmin();
   await assignUsersWithoutActiveLevel(firstLevel);
 }

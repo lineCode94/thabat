@@ -1,5 +1,6 @@
 import { StreakService } from './streak.service.js';
 
+import { QURAN_BADGES, QURAN_PAGE_MILESTONES } from '#constants/quran.js';
 import { prisma } from '#lib/prisma.js';
 
 const RAWATIB_TITLE_PARTS = ['السنة القبلية', 'السنة البعدية'];
@@ -30,6 +31,16 @@ function formatBadgeDto(badge, userBadge = null) {
     earnedAt: userBadge?.earnedAt ?? null,
   };
 }
+
+const RETIRED_DAILY_QURAN_BADGE_KEYS = new Set([
+  'daily_wird_recitation',
+  'daily_quran_memorization',
+  'weekly_wird_consistency',
+  'quran_recitation_review',
+  'monthly_wird_consistency',
+  'monthly_quran_recitation_review',
+  'quran_khatm_604_pages',
+]);
 
 let categoryCache = null;
 
@@ -62,6 +73,7 @@ export class BadgeEngine {
    */
   static async _tryAward(userId, badgeKey, conditionMet) {
     if (!conditionMet) return null;
+    if (RETIRED_DAILY_QURAN_BADGE_KEYS.has(badgeKey)) return null;
 
     // Idempotency check
     const badge = await prisma.badge.findUnique({
@@ -356,6 +368,44 @@ export class BadgeEngine {
       { key: 'dawah_invitation_daily', met: completedDawah },
       { key: 'daily_score_good', met: scorePercentage >= 50 },
       { key: 'daily_score_excellent', met: scorePercentage >= 90 },
+    ];
+
+    for (const { key, met } of candidates) {
+      const badge = await this._tryAward(userId, key, met);
+      if (badge) unlocked.push(badge);
+    }
+
+    return unlocked;
+  }
+
+  static async _hasQuranWeeklyConsistency(userId) {
+    const logs = await prisma.quranWeeklyLog.findMany({
+      where: { userId },
+      select: { weekStartDate: true },
+      orderBy: { weekStartDate: 'desc' },
+      take: 8,
+    });
+
+    return StreakService.hasConsecutiveWeeklyRun(
+      logs.map((log) => log.weekStartDate),
+      2,
+    );
+  }
+
+  static async evaluateQuran(userId) {
+    const unlocked = [];
+    const [progress, weeklyConsistency] = await Promise.all([
+      prisma.quranProgress.findUnique({ where: { userId } }),
+      this._hasQuranWeeklyConsistency(userId),
+    ]);
+
+    const cumulativePages = Number(progress?.cumulativeJuzMemorized ?? 0);
+    const candidates = [
+      { key: QURAN_BADGES.WEEKLY_CONSISTENCY, met: weeklyConsistency },
+      { key: QURAN_BADGES.MEMORIZED_10_JUZ, met: cumulativePages >= QURAN_PAGE_MILESTONES.MEMORIZED_10_JUZ },
+      { key: QURAN_BADGES.MEMORIZED_15_JUZ, met: cumulativePages >= QURAN_PAGE_MILESTONES.MEMORIZED_15_JUZ },
+      { key: QURAN_BADGES.MEMORIZED_20_JUZ, met: cumulativePages >= QURAN_PAGE_MILESTONES.MEMORIZED_20_JUZ },
+      { key: QURAN_BADGES.MEMORIZED_30_JUZ, met: cumulativePages >= QURAN_PAGE_MILESTONES.MEMORIZED_30_JUZ },
     ];
 
     for (const { key, met } of candidates) {

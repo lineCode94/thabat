@@ -1,4 +1,3 @@
-import { ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -40,15 +39,19 @@ export function AppBreadcrumbs() {
     }),
   ];
 
+  const visibleCrumbs = crumbs.length > 2 ? [crumbs[0], crumbs[crumbs.length - 1]] : crumbs;
+
   return (
-    <nav className="flex min-w-0 items-center gap-1 text-sm" aria-label={t('breadcrumbs.dashboard')}>
-      {crumbs.map((crumb, index) => {
-        const isLast = index === crumbs.length - 1;
+    <nav className="flex min-w-0 items-center gap-2 text-sm" aria-label={t('breadcrumbs.dashboard')}>
+      {visibleCrumbs.map((crumb, index) => {
+        const isLast = index === visibleCrumbs.length - 1;
 
         return (
-          <div key={`${crumb.to}-${index}`} className="flex min-w-0 items-center gap-1">
+          <div key={`${crumb.to}-${index}`} className="flex min-w-0 items-center gap-2">
             {index > 0 && (
-              <ChevronRight size={14} className="shrink-0 text-slate-400 rtl:rotate-180" />
+              <span className="shrink-0 text-slate-400" aria-hidden="true">
+                ‹
+              </span>
             )}
             {isLast ? (
               <span className="truncate font-medium text-slate-700 dark:text-slate-200">

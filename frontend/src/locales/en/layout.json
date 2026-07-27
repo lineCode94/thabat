@@ -5,6 +5,7 @@
     "dashboard": "Dashboard",
     "worship": "Worship",
     "todayWorship": "Today's Worship",
+    "quran": "Quran",
     "worshipLibrary": "Worship Library",
     "tracking": "Tracking",
     "missions": "Missions",
@@ -47,6 +48,7 @@
   "breadcrumbs": {
     "dashboard": "Dashboard",
     "tracking": "Today's Worship",
+    "quran": "Quran",
     "worship": "Worship Library",
     "tools": "Tools",
     "tasbih": "Tasbih",

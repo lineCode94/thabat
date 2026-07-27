@@ -174,6 +174,61 @@ const activeBadges = [
     sortOrder: 150,
   },
   {
+    key: 'quran_weekly_consistency',
+    name: 'ثبات المراجعة الأسبوعية',
+    description: 'سجل تقدم القرآن أسبوعين متتاليين دون انقطاع.',
+    iconUrl: null,
+    category: 'Quran',
+    rarity: 'Rare',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'weekly_log_streak', threshold: 2 },
+    sortOrder: 151,
+  },
+  {
+    key: 'quran_memorized_10_juz',
+    name: 'حافظ 10 أجزاء',
+    description: 'وصل إجمالي الحفظ إلى 10 أجزاء.',
+    iconUrl: null,
+    category: 'Quran',
+    rarity: 'Rare',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'cumulative_juz_memorized', threshold: 10 },
+    sortOrder: 152,
+  },
+  {
+    key: 'quran_memorized_15_juz',
+    name: 'نصف القرآن',
+    description: 'وصل إجمالي الحفظ إلى 15 جزءًا.',
+    iconUrl: null,
+    category: 'Quran',
+    rarity: 'Epic',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'cumulative_juz_memorized', threshold: 15 },
+    sortOrder: 153,
+  },
+  {
+    key: 'quran_memorized_20_juz',
+    name: 'حافظ 20 جزءًا',
+    description: 'وصل إجمالي الحفظ إلى 20 جزءًا.',
+    iconUrl: null,
+    category: 'Quran',
+    rarity: 'Epic',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'cumulative_juz_memorized', threshold: 20 },
+    sortOrder: 154,
+  },
+  {
+    key: 'quran_memorized_30_juz',
+    name: 'ختم حفظ القرآن',
+    description: 'أكمل حفظ القرآن كاملًا.',
+    iconUrl: null,
+    category: 'Quran',
+    rarity: 'Legendary',
+    isVisible: true,
+    condition: { type: 'quran', metric: 'cumulative_juz_memorized', threshold: 30 },
+    sortOrder: 155,
+  },
+  {
     key: 'dawah_invitation_daily',
     name: 'صاحب الدعوة',
     description: 'أكمل عبادة الدعوة مرة واحدة على الأقل.',
@@ -208,7 +263,18 @@ const activeBadges = [
   },
 ];
 
-const activeKeys = activeBadges.map((badge) => badge.key);
+const retiredDailyQuranBadgeKeys = [
+  'daily_wird_recitation',
+  'daily_quran_memorization',
+  'weekly_wird_consistency',
+  'quran_recitation_review',
+  'monthly_wird_consistency',
+  'monthly_quran_recitation_review',
+  'quran_khatm_604_pages',
+];
+
+const activeBadgeDefinitions = activeBadges.filter((badge) => !retiredDailyQuranBadgeKeys.includes(badge.key));
+const activeKeys = activeBadgeDefinitions.map((badge) => badge.key);
 
 async function main() {
   console.log('Seeding active badges...');
@@ -224,7 +290,7 @@ async function main() {
     },
   });
 
-  for (const badge of activeBadges) {
+  for (const badge of activeBadgeDefinitions) {
     await prisma.badge.upsert({
       where: { key: badge.key },
       update: {
@@ -243,7 +309,7 @@ async function main() {
   }
 
   console.log(`Archived ${archived.count} legacy badges.`);
-  console.log(`Seeding complete. ${activeBadges.length} active badges upserted.`);
+  console.log(`Seeding complete. ${activeBadgeDefinitions.length} active badges upserted.`);
 }
 
 main()

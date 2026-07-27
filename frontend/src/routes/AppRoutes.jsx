@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
+import { AppLoader } from '@/components/common/AppLoader';
 import { APP_ROUTES } from '@/constants';
 import { AuthLayout } from '@/layouts/AuthLayout';
 import { MainLayout } from '@/layouts/MainLayout';
@@ -12,6 +13,7 @@ const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPage').the
 const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPage').then((module) => ({ default: module.DashboardPage })));
 const DailyTrackingPage = lazy(() => import('@/features/tracking/pages/DailyTrackingPage').then((module) => ({ default: module.DailyTrackingPage })));
 const WorshipPage = lazy(() => import('@/features/worship/pages/WorshipPage').then((module) => ({ default: module.WorshipPage })));
+const QuranPage = lazy(() => import('@/features/quran').then((module) => ({ default: module.QuranPage })));
 const ProfilePage = lazy(() => import('@/features/profile/pages/ProfilePage').then((module) => ({ default: module.ProfilePage })));
 const SettingsPage = lazy(() => import('@/features/profile/pages/SettingsPage').then((module) => ({ default: module.SettingsPage })));
 const NotificationsPage = lazy(() => import('@/features/notifications/pages/NotificationsPage').then((module) => ({ default: module.NotificationsPage })));
@@ -40,11 +42,7 @@ const PrayerProgressPage = lazy(() => import('@/features/tools').then((module) =
 const RamadanCountdownPage = lazy(() => import('@/features/tools').then((module) => ({ default: module.RamadanCountdownPage })));
 
 function RouteLoader() {
-  return (
-    <div className="flex min-h-[320px] items-center justify-center">
-      <div className="h-10 w-10 animate-pulse rounded-2xl bg-primary/25" aria-hidden="true" />
-    </div>
-  );
+  return <AppLoader label="جاري فتح الصفحة..." />;
 }
 
 export function AppRoutes() {
@@ -79,6 +77,14 @@ export function AppRoutes() {
           element={(
             <PermissionGuard permissions={['worship.items.manage']} fallback={<NotFoundPage />}>
               <WorshipPage />
+            </PermissionGuard>
+          )}
+        />
+        <Route
+          path="/quran"
+          element={(
+            <PermissionGuard permissions={['quran.manage_self']} fallback={<NotFoundPage />}>
+              <QuranPage />
             </PermissionGuard>
           )}
         />
