@@ -9,6 +9,7 @@
   "decisionNotesPlaceholder": "ملاحظات القرار",
   "actions": {
     "evaluate": "تقييم الجاهزية",
+    "openReport": "فتح التقرير",
     "createRecommendation": "إنشاء توصية",
     "approve": "اعتماد الترقية",
     "decline": "رفض"
@@ -26,5 +27,34 @@
   },
   "states": {
     "error": "تعذر تحميل بيانات الترقية."
+  },
+  "users": {
+    "title": "المستخدمون المتاحون للمراجعة",
+    "description": "افتح تقرير جاهزية شامل لكل مستخدم وقرر هل يصلح للترقية أم لا.",
+    "searchPlaceholder": "ابحث باسم المستخدم أو البريد",
+    "errorDescription": "تعذر تحميل المستخدمين المتاحين لمراجعة الترقية.",
+    "emptyTitle": "لا يوجد مستخدمون",
+    "emptyDescription": "غيّر البحث أو نطاق التعيين لعرض نتائج.",
+    "name": "الاسم",
+    "email": "البريد",
+    "region": "المنطقة",
+    "currentLevel": "المستوى الحالي",
+    "pending": "توصية معلقة",
+    "actions": "الإجراءات",
+    "reportError": "تعذر تحميل تقرير الجاهزية.",
+    "progress": "التقدم",
+    "passedCriteria": "المعايير المحققة",
+    "decision": "القرار",
+    "eligible": "ينفع يترقى",
+    "notEligible": "لسه غير جاهز",
+    "streakContext": "الاستمرارية الحالية: {{current}} · أطول استمرارية: {{longest}} · إكمال المتابعة: {{completion}}%"
+  },
+  "recent": {
+    "title": "أحدث توصيات الترقية",
+    "description": "تابع قرارات الترقية المعلقة والمعتمدة والمرفوضة."
+  },
+  "pagination": {
+    "previous": "السابق",
+    "next": "التالي"
   }
 }

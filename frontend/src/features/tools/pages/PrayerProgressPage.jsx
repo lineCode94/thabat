@@ -8,18 +8,110 @@ import { TrackingService } from '@/features/tracking/services/tracking.service';
 import { cn } from '@/lib/utils';
 
 const PRAYERS = [
-  { key: 'fajr', time: '04:30', aliases: ['fajr', 'الفجر'] },
-  { key: 'dhuhr', time: '12:05', aliases: ['dhuhr', 'ظهر', 'الظهر'] },
-  { key: 'asr', time: '15:35', aliases: ['asr', 'عصر', 'العصر'] },
-  { key: 'maghrib', time: '18:55', aliases: ['maghrib', 'مغرب', 'المغرب'] },
-  { key: 'isha', time: '20:20', aliases: ['isha', 'عشاء', 'العشاء'] },
+  { key: 'fajr', aliases: ['fajr', 'الفجر'] },
+  { key: 'dhuhr', aliases: ['dhuhr', 'ظهر', 'الظهر'] },
+  { key: 'asr', aliases: ['asr', 'عصر', 'العصر'] },
+  { key: 'maghrib', aliases: ['maghrib', 'مغرب', 'المغرب'] },
+  { key: 'isha', aliases: ['isha', 'عشاء', 'العشاء'] },
 ];
 
-function timeToDate(time, baseDate = new Date()) {
-  const [hours, minutes] = time.split(':').map(Number);
+const CAIRO_PRAYER_CONFIG = {
+  latitude: 30.0444,
+  longitude: 31.2357,
+  timezone: 'Africa/Cairo',
+  fajrAngle: 19.5,
+  ishaAngle: 17.5,
+  asrFactor: 1,
+};
+
+const toRadians = (degrees) => (degrees * Math.PI) / 180;
+const toDegrees = (radians) => (radians * 180) / Math.PI;
+
+function normalizeHours(hours) {
+  return ((hours % 24) + 24) % 24;
+}
+
+function getTimeZoneOffsetHours(date, timeZone) {
+  const zonedDate = new Date(date.toLocaleString('en-US', { timeZone }));
+  const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+  return (zonedDate.getTime() - utcDate.getTime()) / 36e5;
+}
+
+function getZonedDateParts(date, timeZone) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const parts = Object.fromEntries(formatter.formatToParts(date).map((part) => [part.type, part.value]));
+  return {
+    year: Number(parts.year),
+    month: Number(parts.month),
+    day: Number(parts.day),
+  };
+}
+
+function getJulianDate(date) {
+  return date.getTime() / 86400000 + 2440587.5;
+}
+
+function getSunPosition(julianDate) {
+  const day = julianDate - 2451545.0;
+  const meanLongitude = normalizeHours((280.46646 + 0.98564736 * day) / 15) * 15;
+  const meanAnomaly = normalizeHours((357.52911 + 0.98560028 * day) / 15) * 15;
+  const eclipticLongitude = meanLongitude
+    + 1.914602 * Math.sin(toRadians(meanAnomaly))
+    + 0.019993 * Math.sin(toRadians(2 * meanAnomaly));
+  const obliquity = 23.439 - 0.00000036 * day;
+  const rightAscension = normalizeHours(toDegrees(Math.atan2(
+    Math.cos(toRadians(obliquity)) * Math.sin(toRadians(eclipticLongitude)),
+    Math.cos(toRadians(eclipticLongitude)),
+  )) / 15) * 15;
+
+  return {
+    declination: toDegrees(Math.asin(
+      Math.sin(toRadians(obliquity)) * Math.sin(toRadians(eclipticLongitude)),
+    )),
+    equationOfTime: (meanLongitude - rightAscension) / 15,
+  };
+}
+
+function getHourAngle(latitude, declination, altitude) {
+  const numerator = Math.sin(toRadians(altitude))
+    - Math.sin(toRadians(latitude)) * Math.sin(toRadians(declination));
+  const denominator = Math.cos(toRadians(latitude)) * Math.cos(toRadians(declination));
+  return toDegrees(Math.acos(Math.min(1, Math.max(-1, numerator / denominator)))) / 15;
+}
+
+function decimalHoursToDate(decimalHours, baseDate) {
+  const totalMinutes = Math.round(normalizeHours(decimalHours) * 60);
   const date = new Date(baseDate);
-  date.setHours(hours, minutes, 0, 0);
+  date.setHours(Math.floor(totalMinutes / 60), totalMinutes % 60, 0, 0);
   return date;
+}
+
+function getCairoPrayerTimes(baseDate = new Date()) {
+  const { year, month, day } = getZonedDateParts(baseDate, CAIRO_PRAYER_CONFIG.timezone);
+  const cairoNoonUtc = new Date(Date.UTC(year, month - 1, day, 12));
+  const { declination, equationOfTime } = getSunPosition(getJulianDate(cairoNoonUtc));
+  const timezoneOffset = getTimeZoneOffsetHours(cairoNoonUtc, CAIRO_PRAYER_CONFIG.timezone);
+  const solarNoon = 12 + timezoneOffset - (CAIRO_PRAYER_CONFIG.longitude / 15) - equationOfTime;
+  const sunriseDiff = getHourAngle(CAIRO_PRAYER_CONFIG.latitude, declination, -0.833);
+  const fajrDiff = getHourAngle(CAIRO_PRAYER_CONFIG.latitude, declination, -CAIRO_PRAYER_CONFIG.fajrAngle);
+  const ishaDiff = getHourAngle(CAIRO_PRAYER_CONFIG.latitude, declination, -CAIRO_PRAYER_CONFIG.ishaAngle);
+  const asrAltitude = toDegrees(Math.atan(
+    1 / (CAIRO_PRAYER_CONFIG.asrFactor + Math.tan(toRadians(Math.abs(CAIRO_PRAYER_CONFIG.latitude - declination)))),
+  ));
+  const asrDiff = getHourAngle(CAIRO_PRAYER_CONFIG.latitude, declination, asrAltitude);
+
+  return {
+    fajr: decimalHoursToDate(solarNoon - fajrDiff, baseDate),
+    dhuhr: decimalHoursToDate(solarNoon, baseDate),
+    asr: decimalHoursToDate(solarNoon + asrDiff, baseDate),
+    maghrib: decimalHoursToDate(solarNoon + sunriseDiff, baseDate),
+    isha: decimalHoursToDate(solarNoon + ishaDiff, baseDate),
+  };
 }
 
 function formatRemaining(milliseconds) {
@@ -87,9 +179,10 @@ export function PrayerProgressPage() {
   ), [todayState?.items, todayState?.trackingDay?.trackingEntries]);
 
   const prayerState = useMemo(() => {
+    const cairoPrayerTimes = getCairoPrayerTimes(now);
     const prayers = PRAYERS.map((prayer) => ({
       ...prayer,
-      date: timeToDate(prayer.time, now),
+      date: cairoPrayerTimes[prayer.key],
       isCompleted: Boolean(actualCompletion[prayer.key]?.isCompleted),
       itemCount: actualCompletion[prayer.key]?.itemCount ?? 0,
     }));
@@ -97,10 +190,10 @@ export function PrayerProgressPage() {
     const safeNextIndex = nextIndex === -1 ? 0 : nextIndex;
     const timeCompletedCount = nextIndex === -1 ? prayers.length : safeNextIndex;
     const nextPrayer = nextIndex === -1
-      ? { ...prayers[0], date: new Date(timeToDate(prayers[0].time, now).getTime() + 24 * 60 * 60 * 1000) }
+      ? { ...prayers[0], date: new Date(prayers[0].date.getTime() + 24 * 60 * 60 * 1000) }
       : prayers[safeNextIndex];
     const previousPrayer = nextIndex === 0
-      ? { ...prayers[prayers.length - 1], date: new Date(timeToDate(prayers[prayers.length - 1].time, now).getTime() - 24 * 60 * 60 * 1000) }
+      ? { ...prayers[prayers.length - 1], date: new Date(prayers[prayers.length - 1].date.getTime() - 24 * 60 * 60 * 1000) }
       : nextIndex === -1
         ? prayers[prayers.length - 1]
         : prayers[safeNextIndex - 1];

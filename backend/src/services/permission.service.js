@@ -1,10 +1,6 @@
-import { PERMISSION_REGISTRY, ROLE_DEFINITIONS, ROLE_PERMISSION_MAP, ROLES } from '#constants/permissionRegistry.js';
+import { PERMISSION_REGISTRY, ROLE_DEFINITIONS, ROLE_PERMISSION_MAP } from '#constants/permissionRegistry.js';
 import { prisma } from '#lib/prisma.js';
-
-function normalizeRoleCode(roleCode) {
-  if (roleCode === 'ADMIN') return ROLES.SUPER_ADMIN;
-  return roleCode;
-}
+import { ApiError } from '#utils/apiError.js';
 
 export class PermissionService {
   static getRegisteredPermissions() {
@@ -15,7 +11,7 @@ export class PermissionService {
     return ROLE_PERMISSION_MAP;
   }
 
-  static async syncRegistry() {
+  static async syncRegistry({ assignDefaultPermissions = true } = {}) {
     const roles = new Map();
     const permissions = new Map();
 
@@ -48,27 +44,29 @@ export class PermissionService {
       permissions.set(permission.code, dbPermission);
     }
 
-    for (const [roleCode, permissionCodes] of Object.entries(ROLE_PERMISSION_MAP)) {
-      const role = roles.get(roleCode);
+    if (assignDefaultPermissions) {
+      for (const [roleCode, permissionCodes] of Object.entries(ROLE_PERMISSION_MAP)) {
+        const role = roles.get(roleCode);
 
-      for (const permissionCode of permissionCodes) {
-        const permission = permissions.get(permissionCode);
+        for (const permissionCode of permissionCodes) {
+          const permission = permissions.get(permissionCode);
 
-        if (!role || !permission) continue;
+          if (!role || !permission) continue;
 
-        await prisma.rolePermission.upsert({
-          where: {
-            roleId_permissionId: {
+          await prisma.rolePermission.upsert({
+            where: {
+              roleId_permissionId: {
+                roleId: role.id,
+                permissionId: permission.id,
+              },
+            },
+            update: {},
+            create: {
               roleId: role.id,
               permissionId: permission.id,
             },
-          },
-          update: {},
-          create: {
-            roleId: role.id,
-            permissionId: permission.id,
-          },
-        });
+          });
+        }
       }
     }
 
@@ -91,15 +89,99 @@ export class PermissionService {
     return rolePermissions.map((rolePermission) => rolePermission.permission.code);
   }
 
+  static async listRolesWithPermissions() {
+    await this.syncRegistry({ assignDefaultPermissions: false });
+
+    const [roles, permissions] = await Promise.all([
+      prisma.role.findMany({
+        where: { isActive: true },
+        include: {
+          rolePermissions: {
+            include: { permission: true },
+          },
+          _count: {
+            select: { users: true },
+          },
+        },
+        orderBy: { name: 'asc' },
+      }),
+      prisma.permission.findMany({
+        orderBy: [
+          { module: 'asc' },
+          { code: 'asc' },
+        ],
+      }),
+    ]);
+
+    return {
+      roles: roles.map((role) => ({
+        id: role.id,
+        code: role.code,
+        name: role.name,
+        description: role.description,
+        userCount: role._count.users,
+        permissions: role.rolePermissions
+          .map((rolePermission) => rolePermission.permission.code)
+          .sort(),
+      })),
+      permissions,
+    };
+  }
+
+  static async updateRolePermissions(roleId, permissionCodes = []) {
+    await this.syncRegistry({ assignDefaultPermissions: false });
+
+    const uniquePermissionCodes = [...new Set(permissionCodes)];
+    const [role, permissions] = await Promise.all([
+      prisma.role.findUnique({ where: { id: roleId } }),
+      prisma.permission.findMany({
+        where: { code: { in: uniquePermissionCodes } },
+      }),
+    ]);
+
+    if (!role || !role.isActive) {
+      throw ApiError.badRequest('Role is not valid');
+    }
+
+    if (permissions.length !== uniquePermissionCodes.length) {
+      throw ApiError.badRequest('One or more permissions are not valid');
+    }
+
+    const permissionIds = permissions.map((permission) => permission.id);
+
+    await prisma.$transaction(async (tx) => {
+      await tx.rolePermission.deleteMany({
+        where: {
+          roleId,
+          permissionId: { notIn: permissionIds },
+        },
+      });
+
+      for (const permission of permissions) {
+        await tx.rolePermission.upsert({
+          where: {
+            roleId_permissionId: {
+              roleId,
+              permissionId: permission.id,
+            },
+          },
+          update: {},
+          create: {
+            roleId,
+            permissionId: permission.id,
+          },
+        });
+      }
+    });
+
+    return this.listRolesWithPermissions();
+  }
+
   static async getEffectivePermissions(user) {
     if (!user?.roleId) return [];
 
     const databasePermissions = await this.getPermissionsForRole(user.roleId);
-    if (databasePermissions.length > 0) {
-      return databasePermissions;
-    }
+    return databasePermissions;
 
-    const roleCode = normalizeRoleCode(user.role?.code);
-    return ROLE_PERMISSION_MAP[roleCode] ?? [];
   }
 }

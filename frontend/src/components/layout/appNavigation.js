@@ -16,6 +16,7 @@ import {
   TrendingUp,
   ScrollText,
   Settings,
+  ShieldCheck,
   Target,
   User,
   UserRoundCheck,
@@ -149,7 +150,7 @@ export const appNavigation = [
     id: 'admin',
     labelKey: 'layout:navigation.admin',
     icon: UserRoundCheck,
-    permissions: ['regions.manage', 'users.manage_all', 'users.manage_region', 'users.assign', 'users.transfer_mentor', 'worship.items.manage', 'levels.manage', 'levels.promote'],
+    permissions: ['regions.manage', 'users.manage_all', 'users.manage_region', 'users.assign', 'users.transfer_mentor', 'worship.items.manage', 'levels.manage', 'levels.promote', 'settings.manage_system'],
     permissionMode: 'any',
     items: [
       {
@@ -166,6 +167,13 @@ export const appNavigation = [
         to: '/admin/users',
         permissions: ['users.manage_all', 'users.manage_region'],
         permissionMode: 'any',
+      },
+      {
+        id: 'permissions',
+        labelKey: 'layout:navigation.permissions',
+        icon: ShieldCheck,
+        to: '/admin/permissions',
+        permissions: ['settings.manage_system'],
       },
       {
         id: 'mentor-assignments',

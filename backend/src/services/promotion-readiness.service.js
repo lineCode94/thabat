@@ -95,6 +95,12 @@ export class PromotionReadinessService {
     const progress = Math.round((passedCount / criteria.length) * 100);
 
     return {
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        regionId: user.regionId,
+      },
       eligible: criteria.every((criterion) => criterion.passed),
       recommendedLevel: {
         id: nextLevel.id,

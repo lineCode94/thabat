@@ -39,6 +39,11 @@ export const AdminUserService = {
     return response.data.data;
   },
 
+  async delete(id) {
+    const response = await apiClient.delete(`/admin/users/${id}`);
+    return response.data.data;
+  },
+
   async transferRegion(id, payload) {
     const response = await apiClient.post(`/admin/users/${id}/transfer-region`, payload);
     return response.data.data;

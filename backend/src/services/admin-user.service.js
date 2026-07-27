@@ -203,16 +203,45 @@ export class AdminUserService {
     }
 
     try {
-      const user = await prisma.user.update({
-        where: { id },
-        data,
-        include: ADMIN_USER_INCLUDE,
+      const user = await prisma.$transaction(async (tx) => {
+        const updatedUser = await tx.user.update({
+          where: { id },
+          data,
+          include: {
+            ...ADMIN_USER_INCLUDE,
+            role: true,
+          },
+        });
+
+        if (nextRole?.code && nextRole.code !== ROLES.USER && before.role?.code === ROLES.USER) {
+          await tx.mentorAssignment.updateMany({
+            where: {
+              userId: id,
+              isActive: true,
+            },
+            data: { isActive: false },
+          });
+          await tx.userLevel.updateMany({
+            where: {
+              userId: id,
+              isActive: true,
+            },
+            data: { isActive: false },
+          });
+        }
+
+        if (nextRole?.code === ROLES.USER && before.role?.code !== ROLES.USER) {
+          await OnboardingService.createNormalUserOnboarding({ userId: id }, tx);
+        }
+
+        return updatedUser;
       });
 
       const safeUser = sanitizeUser(user);
       const changes = buildChangedFieldsDiff(before, safeUser, [
         'fullName',
         'email',
+        'roleId',
         'phone',
         'avatarUrl',
         'timezone',
@@ -281,6 +310,58 @@ export class AdminUserService {
         },
       });
     }
+
+    return safeUser;
+  }
+
+  static async softDelete(id, { actorId = null } = {}) {
+    const before = await this.findById(id);
+
+    if (before.id === actorId) {
+      throw ApiError.badRequest('You cannot delete your own account', 'CANNOT_DELETE_SELF');
+    }
+
+    const user = await prisma.$transaction(async (tx) => {
+      await tx.mentorAssignment.updateMany({
+        where: {
+          OR: [
+            { userId: id },
+            { mentorId: id },
+          ],
+          isActive: true,
+        },
+        data: { isActive: false },
+      });
+
+      await tx.userLevel.updateMany({
+        where: { userId: id, isActive: true },
+        data: { isActive: false },
+      });
+
+      return tx.user.update({
+        where: { id },
+        data: {
+          isActive: false,
+          deletedAt: new Date(),
+        },
+        include: ADMIN_USER_INCLUDE,
+      });
+    });
+
+    const safeUser = sanitizeUser(user);
+
+    await AuditLogService.record({
+      actorId,
+      action: AUDIT_ACTIONS.USER_DELETED,
+      targetType: AUDIT_TARGET_TYPES.USER,
+      targetId: safeUser.id,
+      regionId: safeUser.regionId,
+      metadata: {
+        email: before.email,
+        roleId: before.roleId,
+        softDelete: true,
+      },
+    });
 
     return safeUser;
   }

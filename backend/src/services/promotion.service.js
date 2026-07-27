@@ -18,6 +18,73 @@ const PROMOTION_INCLUDE = {
 };
 
 export class PromotionService {
+  static async listPromotionUsers(actor, permissions, query = {}) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const skip = (page - 1) * limit;
+    const search = query.search?.trim();
+    const scopeWhere = PromotionAuthorizationService.scopedPromotionUserWhere(actor, permissions);
+    const where = {
+      ...scopeWhere,
+      deletedAt: null,
+      isActive: true,
+      role: { code: 'USER' },
+      ...(search ? {
+        OR: [
+          { fullName: { contains: search, mode: 'insensitive' } },
+          { email: { contains: search, mode: 'insensitive' } },
+        ],
+      } : {}),
+    };
+
+    const [total, users] = await Promise.all([
+      prisma.user.count({ where }),
+      prisma.user.findMany({
+        where,
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          region: { select: { id: true, name: true } },
+          userLevels: {
+            where: { isActive: true },
+            select: {
+              assignedAt: true,
+              worshipLevel: { select: { id: true, name: true, order: true } },
+            },
+            orderBy: [
+              { assignedAt: 'desc' },
+              { createdAt: 'desc' },
+            ],
+            take: 1,
+          },
+          promotionRecommendationsAsUser: {
+            where: { status: 'PENDING' },
+            select: { id: true, status: true, nextLevel: { select: { name: true, order: true } } },
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+          },
+        },
+        orderBy: { fullName: 'asc' },
+        skip,
+        take: limit,
+      }),
+    ]);
+
+    return {
+      users: users.map((user) => ({
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        region: user.region,
+        currentLevel: user.userLevels[0]?.worshipLevel ?? null,
+        levelAssignedAt: user.userLevels[0]?.assignedAt ?? null,
+        pendingPromotion: user.promotionRecommendationsAsUser[0] ?? null,
+      })),
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
   static async createRecommendation(actor, permissions, userId, payload = {}) {
     await PromotionAuthorizationService.assertCanPromoteUser(actor, permissions, userId);
     const readiness = await PromotionReadinessService.evaluate(actor, permissions, userId);

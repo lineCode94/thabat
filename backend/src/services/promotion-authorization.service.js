@@ -70,4 +70,9 @@ export class PromotionAuthorizationService {
 
     throw ApiError.forbidden('Insufficient permissions');
   }
+
+  static scopedPromotionUserWhere(actor, permissions) {
+    const promotionWhere = this.scopedPromotionWhere(actor, permissions);
+    return promotionWhere.user ?? promotionWhere;
+  }
 }

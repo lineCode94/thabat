@@ -8,6 +8,16 @@ export const userPromotionReadinessSchema = z.object({
   body: z.object({}).optional(),
 });
 
+export const listPromotionUsersSchema = z.object({
+  params: z.object({}).optional(),
+  query: z.object({
+    search: z.string().trim().optional(),
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(50).default(20),
+  }),
+  body: z.object({}).optional(),
+});
+
 export const createPromotionRecommendationSchema = z.object({
   params: z.object({ userId: uuidParam }),
   query: z.object({}).optional(),

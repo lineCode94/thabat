@@ -3,6 +3,11 @@ import { PromotionService } from '#services/promotion.service.js';
 import { ApiResponse } from '#utils/apiResponse.js';
 
 export class PromotionController {
+  static async listPromotionUsers(req, res) {
+    const result = await PromotionService.listPromotionUsers(req.user, req.permissions, req.query);
+    return ApiResponse.paginated(res, result.users, result.meta);
+  }
+
   static async getReadiness(req, res) {
     const readiness = await PromotionReadinessService.evaluate(
       req.user,

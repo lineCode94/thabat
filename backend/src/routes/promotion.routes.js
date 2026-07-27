@@ -10,6 +10,7 @@ import {
   createPromotionRecommendationSchema,
   declinePromotionSchema,
   listPromotionsSchema,
+  listPromotionUsersSchema,
   promotionIdSchema,
   userPromotionReadinessSchema,
 } from '#validators/promotion.validator.js';
@@ -18,6 +19,12 @@ const router = Router();
 
 router.use(authenticate);
 router.use(requirePermission(PERMISSIONS.LEVELS_PROMOTE));
+
+router.get(
+  '/promotion-users',
+  validateRequest(listPromotionUsersSchema),
+  asyncHandler(PromotionController.listPromotionUsers),
+);
 
 router.get(
   '/users/:userId/promotion-readiness',

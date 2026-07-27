@@ -30,6 +30,7 @@ const UserReviewsPage = lazy(() => import('@/features/reviews').then((module) =>
 const PromotionRecommendationsPage = lazy(() => import('@/features/promotion').then((module) => ({ default: module.PromotionRecommendationsPage })));
 const PromotionDetailPage = lazy(() => import('@/features/promotion').then((module) => ({ default: module.PromotionDetailPage })));
 const MentorAssignmentsPage = lazy(() => import('@/features/admin/mentor-assignments').then((module) => ({ default: module.MentorAssignmentsPage })));
+const PermissionsPage = lazy(() => import('@/features/admin/permissions').then((module) => ({ default: module.PermissionsPage })));
 const RegionsPage = lazy(() => import('@/features/admin/regions').then((module) => ({ default: module.RegionsPage })));
 const UsersPage = lazy(() => import('@/features/admin/users').then((module) => ({ default: module.UsersPage })));
 const WorshipSchedulePage = lazy(() => import('@/features/admin/worship-schedule').then((module) => ({ default: module.WorshipSchedulePage })));
@@ -236,6 +237,14 @@ export function AppRoutes() {
           element={(
             <PermissionGuard permissions={['users.manage_all', 'users.manage_region']} mode="any" fallback={<NotFoundPage />}>
               <UsersPage />
+            </PermissionGuard>
+          )}
+        />
+        <Route
+          path="/admin/permissions"
+          element={(
+            <PermissionGuard permissions={['settings.manage_system']} fallback={<NotFoundPage />}>
+              <PermissionsPage />
             </PermissionGuard>
           )}
         />

@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 
 import adminMentorRoutes from '#routes/admin-mentor.routes.js';
+import adminPermissionRoutes from '#routes/admin-permission.routes.js';
 import adminTrackingRoutes from '#routes/admin-tracking.routes.js';
 import adminUserRoutes from '#routes/admin-user.routes.js';
 import auditLogRoutes from '#routes/audit-log.routes.js';
@@ -39,6 +40,7 @@ router.use('/missions', missionRoutes);
 router.use('/badges', badgeRoutes);
 router.use('/admin/users', adminUserRoutes);
 router.use('/admin/mentors', adminMentorRoutes);
+router.use('/admin/permissions', adminPermissionRoutes);
 router.use('/admin/tracking', adminTrackingRoutes);
 router.use('/admin/mentor-assignments', mentorAssignmentRoutes);
 router.use('/admin/audit-logs', auditLogRoutes);

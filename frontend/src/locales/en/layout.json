@@ -30,6 +30,7 @@
     "logout": "Logout",
     "regions": "Regions",
     "users": "Users",
+    "permissions": "Permissions",
     "worshipSchedule": "Worship Curriculum",
     "worshipLevels": "Worship Levels",
     "mentorDashboard": "Mentor Dashboard"
@@ -65,6 +66,7 @@
     "settings": "Settings",
     "regions": "Regions",
     "users": "Users",
+    "permissions": "Permissions",
     "admin": "Admin",
     "worship-schedule": "Worship Curriculum",
     "worship-curriculum": "Worship Curriculum",

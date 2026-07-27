@@ -70,6 +70,12 @@ router.patch(
   validateRequest(adminUserParamsSchema),
   asyncHandler(AdminUserController.reactivateUser),
 );
+router.delete(
+  '/:id',
+  requireAnyPermission(PERMISSIONS.USERS_DELETE, PERMISSIONS.SETTINGS_MANAGE_SYSTEM),
+  validateRequest(adminUserParamsSchema),
+  asyncHandler(AdminUserController.deleteUser),
+);
 router.post(
   '/:id/transfer-region',
   requirePermission(PERMISSIONS.USERS_TRANSFER_REGION),

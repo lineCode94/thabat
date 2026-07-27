@@ -119,6 +119,12 @@ export class AdminUserController {
     return ApiResponse.success(res, user, { message: 'User reactivated' });
   }
 
+  static async deleteUser(req, res) {
+    const user = await AdminUserService.softDelete(req.params.id, { actorId: req.user.id });
+
+    return ApiResponse.success(res, user, { message: 'User deleted' });
+  }
+
   static async transferRegion(req, res) {
     const user = await AdminUserService.transferRegion(req.params.id, req.body.regionId, { actorId: req.user.id });
 

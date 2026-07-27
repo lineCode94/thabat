@@ -1,6 +1,14 @@
 import { apiClient } from '@/services/api';
 
 export const PromotionService = {
+  listPromotionUsers: async (params = {}) => {
+    const response = await apiClient.get('/promotion-users', { params });
+    return {
+      data: response.data.data,
+      meta: response.data.meta,
+    };
+  },
+
   getReadiness: async (userId) => {
     const response = await apiClient.get(`/users/${userId}/promotion-readiness`);
     return response.data.data;

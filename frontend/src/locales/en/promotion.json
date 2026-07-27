@@ -9,6 +9,7 @@
   "decisionNotesPlaceholder": "Decision notes",
   "actions": {
     "evaluate": "Evaluate readiness",
+    "openReport": "Open report",
     "createRecommendation": "Create recommendation",
     "approve": "Approve promotion",
     "decline": "Decline"
@@ -26,5 +27,34 @@
   },
   "states": {
     "error": "We could not load promotion data."
+  },
+  "users": {
+    "title": "Users ready for review",
+    "description": "Open a readiness report for each user and decide whether to recommend promotion.",
+    "searchPlaceholder": "Search users by name or email",
+    "errorDescription": "Could not load users available for promotion review.",
+    "emptyTitle": "No users found",
+    "emptyDescription": "Try changing the search or assignment filters.",
+    "name": "Name",
+    "email": "Email",
+    "region": "Region",
+    "currentLevel": "Current level",
+    "pending": "Pending recommendation",
+    "actions": "Actions",
+    "reportError": "Could not load the readiness report.",
+    "progress": "Progress",
+    "passedCriteria": "Passed criteria",
+    "decision": "Decision",
+    "eligible": "Eligible",
+    "notEligible": "Not eligible yet",
+    "streakContext": "Current streak: {{current}} · Longest streak: {{longest}} · Tracking completion: {{completion}}%"
+  },
+  "recent": {
+    "title": "Recent promotion recommendations",
+    "description": "Track pending, approved, and declined promotion decisions."
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
   }
 }
