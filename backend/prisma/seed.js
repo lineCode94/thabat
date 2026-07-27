@@ -571,18 +571,34 @@ async function seedFirstLevelRequirements(firstLevel) {
   console.log(`First worship level requirements ensured: ${activeItems.length} items`);
 }
 
-async function assignUsersWithoutActiveLevel(firstLevel) {
-  const usersWithoutActiveLevel = await prisma.user.findMany({
+async function repairDefaultUserWorshipLevels(firstLevel) {
+  const usersNeedingDefaultLevelRepair = await prisma.user.findMany({
     where: {
       isActive: true,
       deletedAt: null,
-      userLevels: { none: { isActive: true } },
+      role: { code: ROLES.USER },
+      OR: [
+        { userLevels: { none: { isActive: true } } },
+        { onboardingStatus: ONBOARDING_STATUS.PENDING_SETUP },
+        { region: { name: PENDING_SETUP_REGION_NAME } },
+      ],
     },
     select: {
       id: true,
       userLevels: {
-        where: { levelId: firstLevel.id },
-        select: { id: true, isActive: true },
+        select: {
+          id: true,
+          levelId: true,
+          isActive: true,
+          worshipLevel: {
+            select: {
+              id: true,
+              order: true,
+              isActive: true,
+              deletedAt: true,
+            },
+          },
+        },
         orderBy: [
           { assignedAt: 'desc' },
           { createdAt: 'desc' },
@@ -591,14 +607,32 @@ async function assignUsersWithoutActiveLevel(firstLevel) {
     },
   });
 
-  if (usersWithoutActiveLevel.length === 0) {
-    console.log('No users needed retroactive worship level assignment.');
+  if (usersNeedingDefaultLevelRepair.length === 0) {
+    console.log('No users needed default worship level repair.');
     return;
   }
 
+  let repairedCount = 0;
+
   await prisma.$transaction(async (tx) => {
-    for (const user of usersWithoutActiveLevel) {
-      const existingDefaultLevel = user.userLevels[0];
+    for (const user of usersNeedingDefaultLevelRepair) {
+      const activeLevels = user.userLevels.filter((userLevel) => userLevel.isActive);
+      const activeDefaultLevel = activeLevels.find((userLevel) => userLevel.levelId === firstLevel.id);
+      const hasOnlyActiveDefaultLevel = activeLevels.length === 1 && Boolean(activeDefaultLevel);
+
+      if (hasOnlyActiveDefaultLevel) {
+        await tx.userExcludedRequirement.deleteMany({
+          where: { userId: user.id },
+        });
+        continue;
+      }
+
+      await tx.userLevel.updateMany({
+        where: { userId: user.id, isActive: true },
+        data: { isActive: false },
+      });
+
+      const existingDefaultLevel = user.userLevels.find((userLevel) => userLevel.levelId === firstLevel.id);
 
       if (existingDefaultLevel) {
         await tx.userLevel.update({
@@ -614,10 +648,16 @@ async function assignUsersWithoutActiveLevel(firstLevel) {
           },
         });
       }
+
+      await tx.userExcludedRequirement.deleteMany({
+        where: { userId: user.id },
+      });
+
+      repairedCount += 1;
     }
   });
 
-  console.log(`Retroactive worship level assignments ensured: ${usersWithoutActiveLevel.length} users`);
+  console.log(`Default worship level repair ensured: ${repairedCount} users reassigned, ${usersNeedingDefaultLevelRepair.length} users scanned`);
 }
 
 async function main() {
@@ -627,7 +667,7 @@ async function main() {
   await seedFirstLevelRequirements(firstLevel);
   await seedQuranBadges();
   await seedDevelopmentAdmin();
-  await assignUsersWithoutActiveLevel(firstLevel);
+  await repairDefaultUserWorshipLevels(firstLevel);
 }
 
 main()
