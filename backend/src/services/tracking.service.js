@@ -196,7 +196,7 @@ export class TrackingService {
 
   static async getTodayTracking(userId, timezone) {
     const today = this._getTodayForTimezone(timezone);
-    const readiness = await OnboardingService.resolveTodayWorshipReadiness(userId);
+    const readiness = await OnboardingService.resolveTodayWorshipReadiness(userId, prisma, today);
 
     if (!readiness.ready) {
       return {
@@ -285,7 +285,7 @@ export class TrackingService {
   static async submitTrackingForDate(userId, timezone, date, entries) {
     await this._assertTrackingDateWritable(userId, timezone, date);
 
-    const readiness = await OnboardingService.resolveTodayWorshipReadiness(userId);
+    const readiness = await OnboardingService.resolveTodayWorshipReadiness(userId, prisma, date);
 
     if (!readiness.ready) {
       throw ApiError.badRequest('Today worship is not ready for tracking', readiness.reason);

@@ -92,6 +92,15 @@ export class OnboardingService {
     });
   }
 
+  static async ensureActiveUserLevel(user, client = prisma) {
+    const activeUserLevel = await this.getActiveUserLevel(user.id, client);
+    if (activeUserLevel || user.role?.code !== ROLES.USER) {
+      return activeUserLevel;
+    }
+
+    return this.createNormalUserOnboarding({ userId: user.id }, client);
+  }
+
   static async getMentorAssignmentStatus(userId, client = prisma) {
     const assignment = await client.mentorAssignment.findFirst({
       where: { userId, isActive: true },
@@ -120,7 +129,7 @@ export class OnboardingService {
       return null;
     }
 
-    const activeUserLevel = await this.getActiveUserLevel(userId, client);
+    const activeUserLevel = await this.ensureActiveUserLevel(user, client);
     const mentorAssignmentStatus = user.role?.code === ROLES.USER
       ? await this.getMentorAssignmentStatus(userId, client)
       : null;
@@ -160,7 +169,7 @@ export class OnboardingService {
       throw ApiError.notFound('User not found');
     }
 
-    const activeUserLevel = await this.getActiveUserLevel(userId, client);
+    const activeUserLevel = await this.ensureActiveUserLevel(user, client);
 
     // Allow users to see default daily worship even if they are in PENDING_SETUP
     // if (user.role?.code === ROLES.USER && user.onboardingStatus !== ONBOARDING_STATUS.ACTIVE) {

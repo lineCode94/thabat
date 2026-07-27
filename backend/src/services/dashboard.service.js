@@ -6,7 +6,7 @@ import { prisma } from '#lib/prisma.js';
 export class DashboardService {
   static async getSummary(userId, timezone) {
     const today = TrackingService._getTodayForTimezone(timezone);
-    const readiness = await OnboardingService.resolveTodayWorshipReadiness(userId);
+    const readiness = await OnboardingService.resolveTodayWorshipReadiness(userId, prisma, today);
 
     if (!readiness.ready) {
       return {
