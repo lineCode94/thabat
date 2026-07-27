@@ -14,6 +14,20 @@ const FIRST_WORSHIP_LEVEL = {
   description: 'Ø§Ù„Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ Ø§Ù„Ø°ÙŠ ÙŠØ­ØªÙˆÙŠ Ø¹Ù„Ù‰ ÙƒÙ„ Ø¹Ù†Ø§ØµØ± Ø´ÙŠØª Ø§Ù„Ù…ØªØ§Ø¨Ø¹Ø© Ø§Ù„Ø­Ø§Ù„ÙŠ.',
 };
 const FRIDAY = 5;
+const MOJIBAKE_PATTERN = /[ØÙ]/;
+
+function normalizeSeedText(value) {
+  if (typeof value !== 'string' || !MOJIBAKE_PATTERN.test(value)) {
+    return value;
+  }
+
+  return Buffer.from(value, 'latin1').toString('utf8');
+}
+
+function normalizeSeedItemTuple(item) {
+  return item.map((value, index) => (index === 0 ? normalizeSeedText(value) : value));
+}
+
 const MENTOR_WORSHIP_SHEET = [
   {
     name: 'Fajr',
@@ -166,8 +180,15 @@ async function ensureDevelopmentRegion() {
 }
 
 async function seedDevelopmentAdmin() {
+  if (isProduction && (!env.SEED_ADMIN_EMAIL && !env.SEED_ADMIN_PASSWORD)) {
+    console.warn('Skipping seed admin in production because SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD are not configured.');
+    await ensureRbacRegistry();
+    await ensureDevelopmentRegion();
+    return;
+  }
+
   if (isProduction && (!env.SEED_ADMIN_EMAIL || !env.SEED_ADMIN_PASSWORD)) {
-    throw new Error('SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD are required when running seed in production.');
+    throw new Error('Both SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD are required to seed an admin in production.');
   }
 
   const isUsingFallbackDevAdmin = !env.SEED_ADMIN_EMAIL || !env.SEED_ADMIN_PASSWORD;
@@ -208,16 +229,22 @@ async function seedDevelopmentAdmin() {
 }
 
 async function seedWorshipLevels() {
+  const firstWorshipLevel = {
+    ...FIRST_WORSHIP_LEVEL,
+    name: normalizeSeedText(FIRST_WORSHIP_LEVEL.name),
+    description: normalizeSeedText(FIRST_WORSHIP_LEVEL.description),
+  };
+
   const firstLevel = await prisma.worshipLevel.upsert({
-    where: { order: FIRST_WORSHIP_LEVEL.order },
+    where: { order: firstWorshipLevel.order },
     update: {
-      name: FIRST_WORSHIP_LEVEL.name,
-      description: FIRST_WORSHIP_LEVEL.description,
+      name: firstWorshipLevel.name,
+      description: firstWorshipLevel.description,
       isActive: true,
       deletedAt: null,
     },
     create: {
-      ...FIRST_WORSHIP_LEVEL,
+      ...firstWorshipLevel,
       isActive: true,
     },
   });
@@ -236,13 +263,13 @@ async function seedWorshipLevels() {
 }
 
 function normalizeSeedItem(category, item, itemIndex) {
-  const [title, points, inputType, targetValue = null] = item;
+  const [title, points, inputType, targetValue = null] = normalizeSeedItemTuple(item);
 
   return {
     title,
     inputType,
     targetValue,
-    categoryName: category.name,
+    categoryName: normalizeSeedText(category.name),
     daysOfWeek: category.daysOfWeek ?? [],
     order: (category.order * 100) + itemIndex,
     score: points,
@@ -325,6 +352,7 @@ async function upsertWorshipItem(categoryId, itemData) {
 async function seedMentorWorshipSheet() {
   const sheetCategories = MENTOR_WORSHIP_SHEET.map((category, index) => ({
     ...category,
+    name: normalizeSeedText(category.name),
     order: index + 1,
   }));
   const sheetCategoryNames = sheetCategories.map((category) => category.name);
@@ -407,7 +435,17 @@ async function assignUsersWithoutActiveLevel(firstLevel) {
       deletedAt: null,
       userLevels: { none: { isActive: true } },
     },
-    select: { id: true },
+    select: {
+      id: true,
+      userLevels: {
+        where: { levelId: firstLevel.id },
+        select: { id: true, isActive: true },
+        orderBy: [
+          { assignedAt: 'desc' },
+          { createdAt: 'desc' },
+        ],
+      },
+    },
   });
 
   if (usersWithoutActiveLevel.length === 0) {
@@ -415,13 +453,25 @@ async function assignUsersWithoutActiveLevel(firstLevel) {
     return;
   }
 
-  await prisma.userLevel.createMany({
-    data: usersWithoutActiveLevel.map((user) => ({
-      userId: user.id,
-      levelId: firstLevel.id,
-      isActive: true,
-    })),
-    skipDuplicates: true,
+  await prisma.$transaction(async (tx) => {
+    for (const user of usersWithoutActiveLevel) {
+      const existingDefaultLevel = user.userLevels[0];
+
+      if (existingDefaultLevel) {
+        await tx.userLevel.update({
+          where: { id: existingDefaultLevel.id },
+          data: { isActive: true },
+        });
+      } else {
+        await tx.userLevel.create({
+          data: {
+            userId: user.id,
+            levelId: firstLevel.id,
+            isActive: true,
+          },
+        });
+      }
+    }
   });
 
   console.log(`Retroactive worship level assignments ensured: ${usersWithoutActiveLevel.length} users`);
@@ -431,8 +481,8 @@ async function main() {
   const firstLevel = await seedWorshipLevels();
   await seedMentorWorshipSheet();
   await seedFirstLevelRequirements(firstLevel);
-  await assignUsersWithoutActiveLevel(firstLevel);
   await seedDevelopmentAdmin();
+  await assignUsersWithoutActiveLevel(firstLevel);
 }
 
 main()

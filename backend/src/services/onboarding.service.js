@@ -1,6 +1,5 @@
 import {
   MENTOR_ASSIGNMENT_STATUS,
-  ONBOARDING_STATUS,
   PENDING_SETUP_REGION_NAME,
   TODAY_WORSHIP_READINESS,
 } from '#constants/onboarding.js';

@@ -18,4 +18,4 @@ COPY backend ./backend
 
 EXPOSE 5000
 
-CMD ["sh", "-c", "npx prisma migrate deploy --schema=backend/prisma/schema.prisma && npm start --workspace=backend"]
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=backend/prisma/schema.prisma && npx prisma db seed --schema=backend/prisma/schema.prisma && npm start --workspace=backend"]
