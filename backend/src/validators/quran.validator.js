@@ -4,6 +4,7 @@ import { QURAN_TRACK_TYPES } from '#constants/quran.js';
 
 const pageAmount = z.coerce.number().min(0).max(604);
 const positivePagePace = z.coerce.number().positive().max(604);
+const juzAmount = z.coerce.number().min(0).max(30);
 
 export const quranTargetUserQuerySchema = z.object({
   query: z.object({
@@ -26,6 +27,7 @@ export const quranHistorySchema = z.object({
 export const quranSetupSchema = z.object({
   body: z.object({
     trackType: z.enum(Object.values(QURAN_TRACK_TYPES)),
+    memorizedJuz: juzAmount.optional(),
     cumulativePagesMemorized: pageAmount.optional(),
     weeklyTargetPages: positivePagePace.optional(),
     cumulativeJuzMemorized: pageAmount.optional(),
@@ -33,11 +35,11 @@ export const quranSetupSchema = z.object({
     startedAt: z.coerce.date().optional(),
   }).superRefine((value, ctx) => {
     const weeklyTarget = value.weeklyTargetPages ?? value.weeklyTargetJuz;
-    if (value.trackType === QURAN_TRACK_TYPES.MEMORIZING && !weeklyTarget) {
+    if (!weeklyTarget) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['weeklyTargetPages'],
-        message: 'weeklyTargetPages is required for memorizing track',
+        message: 'weeklyTargetPages is required',
       });
     }
   }),

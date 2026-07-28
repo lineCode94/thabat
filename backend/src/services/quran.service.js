@@ -23,6 +23,10 @@ function clampQuranTotal(value) {
   return Math.min(QURAN_TOTAL_PAGES, Math.max(0, Number(value)));
 }
 
+function juzToPages(juz) {
+  return (Number(juz) / 30) * QURAN_TOTAL_PAGES;
+}
+
 function serializeProgress(progress, badges = []) {
   if (!progress) return null;
 
@@ -30,7 +34,7 @@ function serializeProgress(progress, badges = []) {
   const startingPagesMemorized = toNumber(progress.startingJuzMemorized);
   const weeklyTargetPages = progress.weeklyTargetJuz == null ? null : toNumber(progress.weeklyTargetJuz);
   const remainingPages = Math.max(0, QURAN_TOTAL_PAGES - cumulativePagesMemorized);
-  const estimatedMonthsToCompletion = progress.trackType === QURAN_TRACK_TYPES.MEMORIZING && weeklyTargetPages > 0
+  const estimatedMonthsToCompletion = weeklyTargetPages > 0 && remainingPages > 0
     ? Math.ceil(remainingPages / weeklyTargetPages / WEEKS_PER_MONTH)
     : null;
 
@@ -152,7 +156,11 @@ export class QuranService {
       throw ApiError.conflict('Quran progress is already configured', 'QURAN_PROGRESS_ALREADY_CONFIGURED');
     }
 
-    const cumulative = clampQuranTotal(data.cumulativePagesMemorized ?? data.cumulativeJuzMemorized ?? 0);
+    const cumulative = clampQuranTotal(
+      data.memorizedJuz == null
+        ? data.cumulativePagesMemorized ?? data.cumulativeJuzMemorized ?? 0
+        : juzToPages(data.memorizedJuz),
+    );
     const weeklyTargetPages = data.weeklyTargetPages ?? data.weeklyTargetJuz;
     const trackType = data.trackType === QURAN_TRACK_TYPES.MEMORIZING && cumulative >= QURAN_TOTAL_PAGES
       ? QURAN_TRACK_TYPES.REVIEWING
@@ -164,7 +172,7 @@ export class QuranService {
         trackType,
         startingJuzMemorized: cumulative,
         cumulativeJuzMemorized: cumulative,
-        weeklyTargetJuz: trackType === QURAN_TRACK_TYPES.MEMORIZING ? weeklyTargetPages : null,
+        weeklyTargetJuz: weeklyTargetPages,
         startedAt: data.startedAt ?? new Date(),
       },
     });
@@ -210,9 +218,7 @@ export class QuranService {
     const result = await prisma.$transaction(async (tx) => {
       const beforeTrackType = progress.trackType;
       const amountPages = data.amountPages ?? data.amountJuz;
-      const nextCumulative = beforeTrackType === QURAN_TRACK_TYPES.MEMORIZING
-        ? clampQuranTotal(toNumber(progress.cumulativeJuzMemorized) + amountPages)
-        : toNumber(progress.cumulativeJuzMemorized);
+      const nextCumulative = clampQuranTotal(toNumber(progress.cumulativeJuzMemorized) + amountPages);
       const nextTrackType = beforeTrackType === QURAN_TRACK_TYPES.MEMORIZING && nextCumulative >= QURAN_TOTAL_PAGES
         ? QURAN_TRACK_TYPES.REVIEWING
         : beforeTrackType;
@@ -225,7 +231,7 @@ export class QuranService {
           weekEndDate: weekRange.weekEndDate,
           trackType: beforeTrackType,
           amountJuz: amountPages,
-          cumulativeAfter: beforeTrackType === QURAN_TRACK_TYPES.MEMORIZING ? nextCumulative : null,
+          cumulativeAfter: nextCumulative,
         },
       });
 
@@ -234,7 +240,7 @@ export class QuranService {
         data: {
           cumulativeJuzMemorized: nextCumulative,
           trackType: nextTrackType,
-          weeklyTargetJuz: nextTrackType === QURAN_TRACK_TYPES.MEMORIZING ? progress.weeklyTargetJuz : null,
+          weeklyTargetJuz: progress.weeklyTargetJuz,
         },
       });
 
@@ -268,10 +274,6 @@ export class QuranService {
 
     if (!progress) {
       throw ApiError.badRequest('Quran progress is not configured', 'QURAN_PROGRESS_NOT_CONFIGURED');
-    }
-
-    if (progress.trackType !== QURAN_TRACK_TYPES.MEMORIZING) {
-      throw ApiError.badRequest('Weekly memorization target is only available for memorizing track', 'QURAN_TARGET_NOT_AVAILABLE');
     }
 
     const updatedProgress = await prisma.quranProgress.update({
@@ -351,11 +353,8 @@ export class QuranService {
       const updatedLogs = [];
 
       for (const log of logs) {
-        let cumulativeAfter = null;
-        if (log.trackType === QURAN_TRACK_TYPES.MEMORIZING) {
-          cumulative = clampQuranTotal(cumulative + toNumber(log.amountJuz));
-          cumulativeAfter = cumulative;
-        }
+        const cumulativeAfter = clampQuranTotal(cumulative + toNumber(log.amountJuz));
+        cumulative = cumulativeAfter;
 
         const updatedLog = await tx.quranWeeklyLog.update({
           where: { id: log.id },
@@ -373,9 +372,7 @@ export class QuranService {
         data: {
           cumulativeJuzMemorized: cumulative,
           trackType: finalTrackType,
-          weeklyTargetJuz: finalTrackType === QURAN_TRACK_TYPES.MEMORIZING
-            ? before.quranProgress.weeklyTargetJuz
-            : null,
+          weeklyTargetJuz: before.quranProgress.weeklyTargetJuz,
         },
       });
 

@@ -394,12 +394,25 @@ export class BadgeEngine {
 
   static async evaluateQuran(userId) {
     const unlocked = [];
-    const [progress, weeklyConsistency] = await Promise.all([
+    const [progress, weeklyConsistency, highestMemorizingLog] = await Promise.all([
       prisma.quranProgress.findUnique({ where: { userId } }),
       this._hasQuranWeeklyConsistency(userId),
+      prisma.quranWeeklyLog.findFirst({
+        where: {
+          userId,
+          trackType: 'MEMORIZING',
+          cumulativeAfter: { not: null },
+        },
+        select: { cumulativeAfter: true },
+        orderBy: { cumulativeAfter: 'desc' },
+      }),
     ]);
 
-    const cumulativePages = Number(progress?.cumulativeJuzMemorized ?? 0);
+    const currentMemorizingPages = progress?.trackType === 'MEMORIZING'
+      ? Number(progress.cumulativeJuzMemorized ?? 0)
+      : 0;
+    const loggedMemorizingPages = Number(highestMemorizingLog?.cumulativeAfter ?? 0);
+    const cumulativePages = Math.max(currentMemorizingPages, loggedMemorizingPages);
     const candidates = [
       { key: QURAN_BADGES.WEEKLY_CONSISTENCY, met: weeklyConsistency },
       { key: QURAN_BADGES.MEMORIZED_10_JUZ, met: cumulativePages >= QURAN_PAGE_MILESTONES.MEMORIZED_10_JUZ },

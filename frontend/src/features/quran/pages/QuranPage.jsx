@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BookOpen, CalendarCheck, CheckCircle2, Clock3, Edit3, RotateCcw, Save } from 'lucide-react';
+import { BookOpen, CalendarCheck, CheckCircle2, Clock3, Edit3, Lock, Medal, RotateCcw, Save } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -20,17 +20,25 @@ import { cn } from '@/lib/utils';
 import { QuranService } from '../services/quran.service';
 
 const QURAN_TOTAL_PAGES = 604;
+const QURAN_TOTAL_JUZ = 30;
 const WEEKS_PER_MONTH = 4;
+const QURAN_BADGE_KEYS = [
+  'quran_weekly_consistency',
+  'quran_memorized_10_juz',
+  'quran_memorized_15_juz',
+  'quran_memorized_20_juz',
+  'quran_memorized_30_juz',
+];
 
 const TRACKS = {
   MEMORIZING: {
-    title: 'لسه بحفظ',
-    description: 'اكتب عدد الصفحات المحفوظة ومعدل الحفظ الأسبوعي.',
+    title: 'لسه بيحفظ',
+    description: 'اكتب حافظ كام جزء، وبيحفظ كام صفحة أسبوعيا عشان نحسب المتبقي للختم.',
     icon: BookOpen,
   },
   REVIEWING: {
     title: 'حافظ',
-    description: 'سجل مراجعتك الأسبوعية بالصفحات.',
+    description: 'تابع دورة مراجعة كاملة للقرآن وعدل ورد المراجعة الأسبوعي.',
     icon: RotateCcw,
   },
 };
@@ -43,6 +51,15 @@ function formatNumber(value) {
 function formatDate(value) {
   if (!value) return '-';
   return new Intl.DateTimeFormat('ar-EG', { dateStyle: 'medium' }).format(new Date(value));
+}
+
+function juzToPages(juz) {
+  return (Number(juz || 0) / QURAN_TOTAL_JUZ) * QURAN_TOTAL_PAGES;
+}
+
+function estimateMonths(remainingPages, weeklyTargetPages) {
+  if (!weeklyTargetPages || remainingPages <= 0) return null;
+  return Math.ceil(remainingPages / weeklyTargetPages / WEEKS_PER_MONTH);
 }
 
 function isCurrentWeekLog(log) {
@@ -61,14 +78,32 @@ function getMonthLoggedPages(logs = []) {
     .reduce((total, log) => total + Number(log.amountPages ?? 0), 0);
 }
 
+function getTrackCopy(trackType) {
+  const isReviewing = trackType === 'REVIEWING';
+  return {
+    action: isReviewing ? 'راجعت' : 'حفظت',
+    setupProgressLabel: isReviewing ? 'راجعت كام صفحة في دورة المراجعة الحالية؟' : 'حافظ كام جزء حاليا؟',
+    setupProgressPlaceholder: isReviewing ? 'مثال: 120' : 'مثال: 4',
+    setupProgressMax: isReviewing ? QURAN_TOTAL_PAGES : QURAN_TOTAL_JUZ,
+    setupProgressStep: isReviewing ? '1' : '0.25',
+    weeklyTarget: isReviewing ? 'ورد المراجعة الأسبوعي بالصفحات' : 'معدل الحفظ الأسبوعي بالصفحات',
+    remainingTitle: isReviewing ? 'المتبقي لختم المراجعة' : 'المتبقي للختم',
+    completionWord: isReviewing ? 'تختم مراجعة القرآن' : 'تختم حفظ القرآن',
+    dialogTitle: isReviewing ? 'تعديل ورد المراجعة' : 'تعديل معدل الحفظ',
+    dialogDescription: isReviewing
+      ? 'غير عدد الصفحات اللي ناوي تراجعها أسبوعيا، والحسابات هتتحدث حسب الورد الجديد.'
+      : 'غير عدد الصفحات اللي ناوي تحفظها أسبوعيا، والحسابات هتتحدث حسب المعدل الجديد.',
+  };
+}
+
 function QuranSkeleton() {
   return (
-    <div className="mx-auto max-w-5xl space-y-5">
+    <div className="mx-auto max-w-6xl space-y-5">
       <Skeleton className="h-28 rounded-lg" />
       <div className="grid gap-4 md:grid-cols-3">
-        <Skeleton className="h-32 rounded-lg" />
-        <Skeleton className="h-32 rounded-lg" />
-        <Skeleton className="h-32 rounded-lg" />
+        <Skeleton className="h-36 rounded-lg" />
+        <Skeleton className="h-36 rounded-lg" />
+        <Skeleton className="h-36 rounded-lg" />
       </div>
       <Skeleton className="h-44 rounded-lg" />
     </div>
@@ -77,25 +112,28 @@ function QuranSkeleton() {
 
 function SetupPanel({ onSetup, isPending }) {
   const [trackType, setTrackType] = useState('MEMORIZING');
-  const [savedPagesInput, setSavedPagesInput] = useState('');
+  const [progressInput, setProgressInput] = useState('');
   const [weeklyTargetInput, setWeeklyTargetInput] = useState('');
-  const savedPages = Number(savedPagesInput || (trackType === 'REVIEWING' ? QURAN_TOTAL_PAGES : 0));
+  const copy = getTrackCopy(trackType);
+  const progressValue = Number(progressInput || 0);
+  const progressPages = trackType === 'MEMORIZING' ? juzToPages(progressValue) : progressValue;
   const weeklyTargetPages = Number(weeklyTargetInput || 0);
-  const remainingPages = Math.max(0, QURAN_TOTAL_PAGES - savedPages);
-  const expectedMonthPages = weeklyTargetPages > 0 ? Math.min(remainingPages, Math.round(weeklyTargetPages * WEEKS_PER_MONTH)) : 0;
-  const estimatedMonths = weeklyTargetPages > 0 ? Math.ceil(remainingPages / weeklyTargetPages / WEEKS_PER_MONTH) : null;
+  const remainingPages = Math.max(0, QURAN_TOTAL_PAGES - progressPages);
+  const monthTargetPages = weeklyTargetPages > 0 ? Math.min(remainingPages, Math.round(weeklyTargetPages * WEEKS_PER_MONTH)) : 0;
+  const months = estimateMonths(remainingPages, weeklyTargetPages);
 
   function handleSubmit(event) {
     event.preventDefault();
     onSetup({
       trackType,
-      cumulativePagesMemorized: savedPages,
-      weeklyTargetPages: trackType === 'MEMORIZING' ? weeklyTargetPages : undefined,
+      memorizedJuz: trackType === 'MEMORIZING' ? progressValue : undefined,
+      cumulativePagesMemorized: trackType === 'REVIEWING' ? progressPages : undefined,
+      weeklyTargetPages,
     });
   }
 
   return (
-    <form className="grid gap-5 lg:grid-cols-[1fr_340px]" onSubmit={handleSubmit}>
+    <form className="grid gap-5 lg:grid-cols-[1fr_360px]" onSubmit={handleSubmit}>
       <section className="grid gap-4 md:grid-cols-2">
         {Object.entries(TRACKS).map(([key, track]) => {
           const Icon = track.icon;
@@ -105,65 +143,72 @@ function SetupPanel({ onSetup, isPending }) {
             <button
               key={key}
               type="button"
-              onClick={() => setTrackType(key)}
+              onClick={() => {
+                setTrackType(key);
+                setProgressInput('');
+              }}
               className={cn(
-                'rounded-lg border-2 bg-background/80 p-5 text-right transition',
-                selected ? 'border-primary shadow-[0_8px_0_rgba(6,182,212,0.38)]' : 'border-border hover:border-primary/60',
+                'min-h-56 rounded-lg border-2 bg-background/85 p-6 text-right transition',
+                selected ? 'border-primary shadow-[0_8px_0_rgba(6,182,212,0.34)]' : 'border-border hover:border-primary/60',
               )}
             >
-              <div className="mb-8 flex items-center justify-between">
+              <div className="mb-10 flex items-center justify-between">
                 <span className={cn('rounded-md px-3 py-1 text-xs font-black', selected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground')}>
-                  {selected ? 'المسار المختار' : 'اختر'}
+                  {selected ? 'المسار المختار' : 'اختيار'}
                 </span>
                 <Icon className="h-8 w-8 text-primary" />
               </div>
               <h2 className="text-2xl font-black text-foreground">{track.title}</h2>
-              <p className="mt-2 text-sm leading-7 text-muted-foreground">{track.description}</p>
+              <p className="mt-3 text-sm leading-7 text-muted-foreground">{track.description}</p>
             </button>
           );
         })}
       </section>
 
-      <section className="rounded-lg border-2 border-border bg-background/90 p-5 text-right">
+      <section className="rounded-lg border-2 border-border bg-background/90 p-5 text-right shadow-[0_6px_0_rgba(6,182,212,0.2)]">
         <h2 className="text-xl font-black text-foreground">بيانات البداية</h2>
         <div className="mt-5 space-y-4">
           <label className="space-y-2">
-            <span className="text-sm font-bold text-muted-foreground">الصفحات المحفوظة حاليًا</span>
+            <span className="text-sm font-bold text-muted-foreground">{copy.setupProgressLabel}</span>
             <Input
               className="h-12 border-2 bg-background text-lg font-bold"
               min="0"
-              max={QURAN_TOTAL_PAGES}
-              step="1"
+              max={copy.setupProgressMax}
+              step={copy.setupProgressStep}
               type="number"
-              value={savedPagesInput}
-              onChange={(event) => setSavedPagesInput(event.target.value)}
-              placeholder={trackType === 'REVIEWING' ? '604' : 'مثال: 40'}
+              value={progressInput}
+              onChange={(event) => setProgressInput(event.target.value)}
+              placeholder={copy.setupProgressPlaceholder}
             />
           </label>
 
-          {trackType === 'MEMORIZING' && (
-            <label className="space-y-2">
-              <span className="text-sm font-bold text-muted-foreground">هدفك الأسبوعي بالصفحات</span>
-              <Input
-                className="h-12 border-2 bg-background text-lg font-bold"
-                min="1"
-                max={QURAN_TOTAL_PAGES}
-                step="1"
-                type="number"
-                value={weeklyTargetInput}
-                onChange={(event) => setWeeklyTargetInput(event.target.value)}
-                placeholder="مثال: 5"
-              />
-            </label>
+          {trackType === 'MEMORIZING' && progressValue > 0 && (
+            <p className="text-xs font-bold text-muted-foreground">
+              يعني تقريبا {formatNumber(progressPages)} صفحة محفوظة من أصل {QURAN_TOTAL_PAGES} صفحة.
+            </p>
           )}
 
-          {trackType === 'MEMORIZING' && weeklyTargetPages > 0 && (
+          <label className="space-y-2">
+            <span className="text-sm font-bold text-muted-foreground">{copy.weeklyTarget}</span>
+            <Input
+              className="h-12 border-2 bg-background text-lg font-bold"
+              min="1"
+              max={QURAN_TOTAL_PAGES}
+              step="1"
+              type="number"
+              value={weeklyTargetInput}
+              onChange={(event) => setWeeklyTargetInput(event.target.value)}
+              placeholder="مثال: 10"
+            />
+          </label>
+
+          {weeklyTargetPages > 0 && (
             <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm leading-7 text-muted-foreground">
-              الشهر محسوب 4 أسابيع: متوقع {formatNumber(expectedMonthPages)} صفحة، والختم بعد حوالي {formatNumber(estimatedMonths)} شهر.
+              متوقع هذا الشهر {formatNumber(monthTargetPages)} صفحة، و{copy.completionWord} بعد حوالي {formatNumber(months ?? 0)} شهر.
             </div>
           )}
 
-          <Button className="h-12 w-full text-base font-black" disabled={isPending} type="submit">
+          <Button className="h-12 w-full text-base font-black" disabled={isPending || weeklyTargetPages <= 0} type="submit">
             <Save />
             حفظ البداية
           </Button>
@@ -180,13 +225,12 @@ function SummaryCards({ progress, logs }) {
   const monthTargetPages = weeklyTargetPages > 0 ? Math.round(weeklyTargetPages * WEEKS_PER_MONTH) : 0;
   const remainingThisMonth = Math.max(0, monthTargetPages - monthLoggedPages);
   const remainingAll = Number(progress.remainingPages ?? 0);
-  const estimatedMonths = progress.trackType === 'MEMORIZING' && weeklyTargetPages > 0
-    ? Math.ceil(remainingAll / weeklyTargetPages / WEEKS_PER_MONTH)
-    : null;
+  const months = progress.estimatedMonthsToCompletion ?? estimateMonths(remainingAll, weeklyTargetPages);
+  const copy = getTrackCopy(progress.trackType);
 
   const cards = [
     {
-      title: progress.trackType === 'MEMORIZING' ? 'حفظت الأسبوع ده' : 'راجعت الأسبوع ده',
+      title: `${copy.action} الأسبوع ده`,
       value: `${formatNumber(currentWeekLog?.amountPages ?? 0)} صفحة`,
       hint: currentWeekLog ? `تم التسجيل يوم ${formatDate(currentWeekLog.createdAt)}` : 'لسه مفيش تسجيل للأسبوع الحالي',
       icon: CalendarCheck,
@@ -194,17 +238,15 @@ function SummaryCards({ progress, logs }) {
     },
     {
       title: 'متبقي للشهر ده',
-      value: progress.trackType === 'MEMORIZING' ? `${formatNumber(remainingThisMonth)} صفحة` : 'ثبات مراجعة',
-      hint: progress.trackType === 'MEMORIZING'
-        ? `هدف الشهر 4 أسابيع: ${formatNumber(monthTargetPages)} صفحة`
-        : 'المراجعة هدفها الاستمرار لا الختم',
+      value: `${formatNumber(remainingThisMonth)} صفحة`,
+      hint: `هدف الشهر: ${formatNumber(monthTargetPages)} صفحة حسب ورد ${formatNumber(weeklyTargetPages)} أسبوعيا`,
       icon: Clock3,
       active: true,
     },
     {
-      title: 'المتبقي للختم',
-      value: progress.trackType === 'MEMORIZING' ? `${formatNumber(remainingAll)} صفحة` : 'لا يوجد',
-      hint: estimatedMonths ? `لو كملت بنفس المعدل: حوالي ${formatNumber(estimatedMonths)} شهر` : 'أنت الآن في مسار المراجعة',
+      title: copy.remainingTitle,
+      value: `${formatNumber(remainingAll)} صفحة`,
+      hint: remainingAll > 0 && months ? `لو كملت بنفس المعدل: حوالي ${formatNumber(months)} شهر` : 'تم الوصول للهدف الحالي',
       icon: BookOpen,
       active: true,
     },
@@ -242,10 +284,9 @@ function TargetDialog({ progress, onUpdate, isPending }) {
   const [weeklyTargetPages, setWeeklyTargetPages] = useState(progress.weeklyTargetPages ?? '');
   const weeklyPages = Number(weeklyTargetPages || 0);
   const remainingPages = Math.max(0, Number(progress.remainingPages ?? 0));
-  const estimatedMonths = weeklyPages > 0 ? Math.ceil(remainingPages / weeklyPages / WEEKS_PER_MONTH) : null;
+  const months = estimateMonths(remainingPages, weeklyPages);
   const monthTargetPages = weeklyPages > 0 ? Math.round(weeklyPages * WEEKS_PER_MONTH) : 0;
-
-  if (progress.trackType !== 'MEMORIZING') return null;
+  const copy = getTrackCopy(progress.trackType);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -260,20 +301,18 @@ function TargetDialog({ progress, onUpdate, isPending }) {
       <DialogTrigger asChild>
         <Button className="h-11 px-5 text-sm font-black" variant="outline">
           <Edit3 />
-          تعديل المعدل
+          تحديث المعدل
         </Button>
       </DialogTrigger>
       <DialogContent className="border-2 text-right shadow-[0_10px_0_rgba(6,182,212,0.28)]">
         <DialogHeader className="text-right">
-          <DialogTitle className="text-2xl font-black">تعديل معدل الحفظ</DialogTitle>
-          <DialogDescription className="leading-7">
-            غير عدد الصفحات اللي ناوي تحفظها أسبوعيًا، والحسابات هتتحدث بناءً على المعدل الجديد.
-          </DialogDescription>
+          <DialogTitle className="text-2xl font-black">{copy.dialogTitle}</DialogTitle>
+          <DialogDescription className="leading-7">{copy.dialogDescription}</DialogDescription>
         </DialogHeader>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <label className="space-y-2">
-            <span className="text-sm font-black text-muted-foreground">المعدل الأسبوعي بالصفحات</span>
+            <span className="text-sm font-black text-muted-foreground">{copy.weeklyTarget}</span>
             <Input
               className="h-12 border-2 bg-background text-lg font-bold"
               min="1"
@@ -282,13 +321,13 @@ function TargetDialog({ progress, onUpdate, isPending }) {
               type="number"
               value={weeklyTargetPages}
               onChange={(event) => setWeeklyTargetPages(event.target.value)}
-              placeholder="مثال: 5"
+              placeholder="مثال: 10"
             />
           </label>
 
           {weeklyPages > 0 && (
             <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm leading-7 text-muted-foreground">
-              بالمعدل ده هتحفظ تقريبًا {formatNumber(monthTargetPages)} صفحة في الشهر، وتختم بعد حوالي {formatNumber(estimatedMonths)} شهر.
+              بالمعدل ده هتنجز تقريبا {formatNumber(monthTargetPages)} صفحة في الشهر، والهدف يخلص بعد حوالي {formatNumber(months ?? 0)} شهر.
             </div>
           )}
 
@@ -307,10 +346,8 @@ function TargetDialog({ progress, onUpdate, isPending }) {
 function WeeklyLogPanel({ progress, logs, onSubmit, isPending }) {
   const [amountPages, setAmountPages] = useState('');
   const currentWeekLog = logs.find(isCurrentWeekLog);
-  const isMemorizing = progress.trackType === 'MEMORIZING';
-  const remainingAfterThisWeek = isMemorizing
-    ? Math.max(0, Number(progress.remainingPages ?? 0) - Number(amountPages || 0))
-    : null;
+  const copy = getTrackCopy(progress.trackType);
+  const remainingAfterThisWeek = Math.max(0, Number(progress.remainingPages ?? 0) - Number(amountPages || 0));
 
   if (currentWeekLog) {
     return (
@@ -320,7 +357,7 @@ function WeeklyLogPanel({ progress, logs, onSubmit, isPending }) {
           <div>
             <h2 className="text-2xl font-black text-foreground">تم تسجيل الأسبوع الحالي</h2>
             <p className="mt-2 text-sm leading-7 text-muted-foreground">
-              {isMemorizing ? 'حفظت' : 'راجعت'} هذا الأسبوع {formatNumber(currentWeekLog.amountPages)} صفحة.
+              {copy.action} هذا الأسبوع {formatNumber(currentWeekLog.amountPages)} صفحة.
             </p>
           </div>
         </div>
@@ -338,9 +375,7 @@ function WeeklyLogPanel({ progress, logs, onSubmit, isPending }) {
     <form className="rounded-lg border-2 border-border bg-background/80 p-5 text-right" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4 md:flex-row md:items-end">
         <label className="flex-1 space-y-2">
-          <span className="text-sm font-black text-muted-foreground">
-            {isMemorizing ? 'كم صفحة حفظت هذا الأسبوع؟' : 'كم صفحة راجعت هذا الأسبوع؟'}
-          </span>
+          <span className="text-sm font-black text-muted-foreground">كم صفحة {copy.action} هذا الأسبوع؟</span>
           <Input
             className="h-12 border-2 bg-background text-lg font-bold"
             min="1"
@@ -352,17 +387,65 @@ function WeeklyLogPanel({ progress, logs, onSubmit, isPending }) {
             placeholder="مثال: 3"
           />
         </label>
-        <Button className="h-12 px-6 text-base font-black" disabled={isPending} type="submit">
+        <Button className="h-12 px-6 text-base font-black" disabled={isPending || Number(amountPages || 0) <= 0} type="submit">
           <CheckCircle2 />
           تسجيل الأسبوع
         </Button>
       </div>
-      {remainingAfterThisWeek != null && Number(amountPages || 0) > 0 && (
+      {Number(amountPages || 0) > 0 && (
         <p className="mt-4 text-sm text-muted-foreground">
-          بعد التسجيل هيتبقى عليك تقريبًا {formatNumber(remainingAfterThisWeek)} صفحة للختم.
+          بعد التسجيل هيتبقى عليك تقريبا {formatNumber(remainingAfterThisWeek)} صفحة.
         </p>
       )}
     </form>
+  );
+}
+
+function QuranBadgesPanel({ badges }) {
+  const quranBadges = QURAN_BADGE_KEYS
+    .map((key) => badges.find((badge) => badge.key === key))
+    .filter(Boolean);
+
+  if (!quranBadges.length) return null;
+
+  return (
+    <section className="rounded-lg border-2 border-border bg-background/75 p-5 text-right">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <Medal className="h-7 w-7 text-primary" />
+        <div>
+          <h2 className="text-xl font-black text-foreground">أوسمة القرآن</h2>
+          <p className="mt-1 text-sm text-muted-foreground">المواظبة الأسبوعية ومراحل الحفظ تظهر هنا أول ما تتحقق.</p>
+        </div>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+        {quranBadges.map((badge) => {
+          const earned = Boolean(badge.isEarned);
+          return (
+            <article
+              key={badge.key}
+              className={cn(
+                'rounded-lg border-2 p-4 transition',
+                earned
+                  ? 'border-primary/60 bg-primary/15 shadow-[0_5px_0_rgba(6,182,212,0.2)]'
+                  : 'border-border bg-muted/20 opacity-75',
+              )}
+            >
+              <div className="mb-4 flex justify-end">
+                <span className={cn('flex h-10 w-10 items-center justify-center rounded-md', earned ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground')}>
+                  {earned ? <Medal className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
+                </span>
+              </div>
+              <h3 className="text-base font-black text-foreground">{badge.name ?? badge.key}</h3>
+              <p className="mt-2 text-xs leading-6 text-muted-foreground">{badge.description}</p>
+              <p className={cn('mt-3 text-xs font-black', earned ? 'text-primary' : 'text-muted-foreground')}>
+                {earned ? `مكتسب ${formatDate(badge.earnedAt)}` : 'لم يكتسب بعد'}
+              </p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -414,7 +497,7 @@ export function QuranPage() {
 
   const progress = progressQuery.data?.progress;
   const logs = historyQuery.data?.logs ?? [];
-  const badges = useMemo(() => progressQuery.data?.badgesEarned ?? progressQuery.data?.badges ?? [], [progressQuery.data]);
+  const badges = useMemo(() => progress?.badges ?? [], [progress]);
 
   const setupMutation = useMutation({
     mutationFn: QuranService.setup,
@@ -440,7 +523,7 @@ export function QuranPage() {
   const targetMutation = useMutation({
     mutationFn: QuranService.updateWeeklyTarget,
     onSuccess: () => {
-      toast.success('تم تحديث معدل الحفظ');
+      toast.success('تم تحديث المعدل');
       queryClient.invalidateQueries({ queryKey: ['quranProgress'] });
     },
     onError: (error) => toast.error(error.response?.data?.message || 'تعذر تحديث المعدل'),
@@ -458,17 +541,15 @@ export function QuranPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5">
+    <div className="mx-auto max-w-6xl space-y-5">
       <header className="rounded-lg border-2 border-border bg-background/80 p-5 text-right shadow-[0_6px_0_rgba(6,182,212,0.22)]">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          {progress?.trackType === 'MEMORIZING' && (
-            <TargetDialog progress={progress} onUpdate={targetMutation.mutate} isPending={targetMutation.isPending} />
-          )}
+          {progress && <TargetDialog progress={progress} onUpdate={targetMutation.mutate} isPending={targetMutation.isPending} />}
           <div>
             <p className="text-sm font-black text-primary">القرآن</p>
-            <h1 className="mt-1 text-3xl font-black text-foreground">ملخص الحفظ والمراجعة</h1>
+            <h1 className="mt-1 text-3xl font-black text-foreground">الحفظ والمراجعة</h1>
             <p className="mt-2 text-sm leading-7 text-muted-foreground">
-              هنا تتابع أسبوعك، المتبقي للشهر، والمدة التقريبية للختم حسب معدلك الحالي.
+              هنا تتابع أسبوعك، المتبقي للشهر، والمدة التقريبية حسب معدلك الحالي.
             </p>
           </div>
         </div>
@@ -480,18 +561,7 @@ export function QuranPage() {
         <>
           <SummaryCards progress={progress} logs={logs} />
           <WeeklyLogPanel progress={progress} logs={logs} onSubmit={logMutation.mutate} isPending={logMutation.isPending} />
-          {!!badges.length && (
-            <section className="rounded-lg border-2 border-border bg-background/75 p-5 text-right">
-              <h2 className="text-lg font-black">الأوسمة المكتسبة</h2>
-              <div className="mt-4 flex flex-wrap justify-end gap-2">
-                {badges.map((badge) => (
-                  <span key={badge.id ?? badge.key} className="rounded-md border border-primary/40 bg-primary/15 px-3 py-2 text-sm font-bold">
-                    {badge.name ?? badge.key}
-                  </span>
-                ))}
-              </div>
-            </section>
-          )}
+          <QuranBadgesPanel badges={badges} />
           {historyQuery.isLoading ? <Skeleton className="h-44 rounded-lg" /> : <HistoryTable logs={logs} />}
         </>
       )}
