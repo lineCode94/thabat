@@ -31,10 +31,40 @@ const QURAN_BADGE_KEYS = [
   'quran_memorized_30_juz',
 ];
 
+const QURAN_BADGE_COPY = {
+  quran_weekly_consistency: {
+    name: 'ثبات أسبوعي',
+    description: 'سجل تقدم القرآن أسبوعين متتاليين دون انقطاع.',
+  },
+  quran_memorized_10_juz: {
+    name: 'حافظ 10 أجزاء',
+    description: 'وصلت في الحفظ إلى 10 أجزاء.',
+  },
+  quran_memorized_15_juz: {
+    name: 'نصف القرآن',
+    description: 'وصلت في الحفظ إلى 15 جزءا.',
+  },
+  quran_memorized_20_juz: {
+    name: 'حافظ 20 جزءا',
+    description: 'وصلت في الحفظ إلى 20 جزءا.',
+  },
+  quran_memorized_30_juz: {
+    name: 'ختم حفظ القرآن',
+    description: 'أكملت حفظ القرآن كاملا.',
+  },
+};
+
+const QURAN_ERROR_MESSAGES = {
+  QURAN_PROGRESS_ALREADY_CONFIGURED: 'مسار القرآن محفوظ بالفعل.',
+  QURAN_PROGRESS_NOT_CONFIGURED: 'لم يتم إعداد مسار القرآن بعد.',
+  QURAN_WEEKLY_LOG_ALREADY_EXISTS: 'تم تسجيل هذا الأسبوع بالفعل.',
+  QURAN_TARGET_NOT_AVAILABLE: 'لا يمكن تحديث هذا المعدل للمسار الحالي.',
+};
+
 const TRACKS = {
   MEMORIZING: {
-    title: 'لسه بيحفظ',
-    description: 'اكتب حافظ كام جزء، وبيحفظ كام صفحة أسبوعيا عشان نحسب المتبقي للختم.',
+    title: 'ما زال يحفظ',
+    description: 'اكتب عدد الأجزاء المحفوظة ومعدل الحفظ الأسبوعي بالصفحات لحساب المتبقي للختم.',
     icon: BookOpen,
   },
   REVIEWING: {
@@ -69,6 +99,11 @@ function estimateMonths(remainingPages, weeklyTargetPages) {
   return Math.ceil(remainingPages / weeklyTargetPages / WEEKS_PER_MONTH);
 }
 
+function getQuranErrorMessage(error, fallback) {
+  const code = error.response?.data?.error?.code;
+  return QURAN_ERROR_MESSAGES[code] ?? fallback;
+}
+
 function isCurrentWeekLog(log) {
   if (!log?.weekStartDate || !log?.weekEndDate) return false;
   const now = new Date();
@@ -89,7 +124,7 @@ function getTrackCopy(trackType) {
   const isReviewing = trackType === 'REVIEWING';
   return {
     action: isReviewing ? 'راجعت' : 'حفظت',
-    setupProgressLabel: isReviewing ? 'راجعت كام صفحة في دورة المراجعة الحالية؟' : 'حافظ كام جزء حاليا؟',
+    setupProgressLabel: isReviewing ? 'كم صفحة راجعت في دورة المراجعة الحالية؟' : 'كم جزءا تحفظ حاليا؟',
     setupProgressPlaceholder: isReviewing ? 'مثال: 120' : 'مثال: 4',
     setupProgressMax: isReviewing ? QURAN_TOTAL_PAGES : QURAN_TOTAL_JUZ,
     setupProgressStep: isReviewing ? '1' : '0.25',
@@ -98,8 +133,8 @@ function getTrackCopy(trackType) {
     completionWord: isReviewing ? 'تختم مراجعة القرآن' : 'تختم حفظ القرآن',
     dialogTitle: isReviewing ? 'تعديل ورد المراجعة' : 'تعديل معدل الحفظ',
     dialogDescription: isReviewing
-      ? 'غير عدد الصفحات اللي ناوي تراجعها أسبوعيا، والحسابات هتتحدث حسب الورد الجديد.'
-      : 'غير عدد الصفحات اللي ناوي تحفظها أسبوعيا، والحسابات هتتحدث حسب المعدل الجديد.',
+      ? 'غير عدد الصفحات التي تنوي مراجعتها أسبوعيا، وسيتم تحديث الحسابات حسب الورد الجديد.'
+      : 'غير عدد الصفحات التي تنوي حفظها أسبوعيا، وسيتم تحديث الحسابات حسب المعدل الجديد.',
   };
 }
 
@@ -191,7 +226,7 @@ function SetupPanel({ onSetup, isPending }) {
 
           {trackType === 'MEMORIZING' && progressValue > 0 && (
             <p className="text-xs font-bold text-muted-foreground">
-              يعني تقريبا {formatPages(progressPages)} صفحة محفوظة من أصل {QURAN_TOTAL_PAGES} صفحة.
+              هذا يساوي تقريبا {formatPages(progressPages)} صفحة محفوظة من أصل {QURAN_TOTAL_PAGES} صفحة.
             </p>
           )}
 
@@ -211,7 +246,7 @@ function SetupPanel({ onSetup, isPending }) {
 
           {weeklyTargetPages > 0 && (
             <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm leading-7 text-muted-foreground">
-              متوقع هذا الشهر {formatPages(monthTargetPages)} صفحة، و{copy.completionWord} بعد حوالي {formatNumber(months ?? 0)} شهر.
+              المتوقع هذا الشهر {formatPages(monthTargetPages)} صفحة، و{copy.completionWord} بعد حوالي {formatNumber(months ?? 0)} شهر.
             </div>
           )}
 
@@ -237,23 +272,23 @@ function SummaryCards({ progress, logs }) {
 
   const cards = [
     {
-      title: `${copy.action} الأسبوع ده`,
+      title: `${copy.action} هذا الأسبوع`,
       value: `${formatPages(currentWeekLog?.amountPages ?? 0)} صفحة`,
-      hint: currentWeekLog ? `تم التسجيل يوم ${formatDate(currentWeekLog.createdAt)}` : 'لسه مفيش تسجيل للأسبوع الحالي',
+      hint: currentWeekLog ? `تم التسجيل يوم ${formatDate(currentWeekLog.createdAt)}` : 'لا يوجد تسجيل للأسبوع الحالي بعد',
       icon: CalendarCheck,
       active: Boolean(currentWeekLog),
     },
     {
-      title: 'متبقي للشهر ده',
+      title: 'المتبقي لهذا الشهر',
       value: `${formatPages(remainingThisMonth, 'ceil')} صفحة`,
-      hint: `هدف الشهر: ${formatPages(monthTargetPages)} صفحة حسب ورد ${formatPages(weeklyTargetPages)} أسبوعيا`,
+      hint: `هدف الشهر: ${formatPages(monthTargetPages)} صفحة حسب ورد ${formatPages(weeklyTargetPages)} صفحة أسبوعيا`,
       icon: Clock3,
       active: true,
     },
     {
       title: copy.remainingTitle,
       value: `${formatPages(remainingAll, 'ceil')} صفحة`,
-      hint: remainingAll > 0 && months ? `لو كملت بنفس المعدل: حوالي ${formatNumber(months)} شهر` : 'تم الوصول للهدف الحالي',
+      hint: remainingAll > 0 && months ? `إذا استمررت بنفس المعدل: حوالي ${formatNumber(months)} شهر` : 'تم الوصول للهدف الحالي',
       icon: BookOpen,
       active: true,
     },
@@ -334,7 +369,7 @@ function TargetDialog({ progress, onUpdate, isPending }) {
 
           {weeklyPages > 0 && (
             <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm leading-7 text-muted-foreground">
-              بالمعدل ده هتنجز تقريبا {formatPages(monthTargetPages)} صفحة في الشهر، والهدف يخلص بعد حوالي {formatNumber(months ?? 0)} شهر.
+              بهذا المعدل ستنجز تقريبا {formatPages(monthTargetPages)} صفحة في الشهر، ويكتمل الهدف بعد حوالي {formatNumber(months ?? 0)} شهر.
             </div>
           )}
 
@@ -387,7 +422,7 @@ function TrackDialog({ progress, onUpdate, isPending }) {
         <DialogHeader className="text-right">
           <DialogTitle className="text-2xl font-black">تعديل مسار القرآن</DialogTitle>
           <DialogDescription className="leading-7">
-            استخدمها لو اخترت المسار غلط. سيتم تحديث المسار والبيانات الحالية، مع الحفاظ على سجل الأسابيع القديم.
+            استخدمها إذا اخترت المسار الخطأ. سيتم تحديث المسار والبيانات الحالية، مع الحفاظ على سجل الأسابيع القديم.
           </DialogDescription>
         </DialogHeader>
 
@@ -514,7 +549,7 @@ function WeeklyLogPanel({ progress, logs, onSubmit, isPending }) {
       </div>
       {Number(amountPages || 0) > 0 && (
         <p className="mt-4 text-sm text-muted-foreground">
-          بعد التسجيل هيتبقى عليك تقريبا {formatPages(remainingAfterThisWeek, 'ceil')} صفحة.
+          بعد التسجيل سيتبقى عليك تقريبا {formatPages(remainingAfterThisWeek, 'ceil')} صفحة.
         </p>
       )}
     </form>
@@ -534,13 +569,14 @@ function QuranBadgesPanel({ badges }) {
         <Medal className="h-7 w-7 text-primary" />
         <div>
           <h2 className="text-xl font-black text-foreground">أوسمة القرآن</h2>
-          <p className="mt-1 text-sm text-muted-foreground">المواظبة الأسبوعية ومراحل الحفظ تظهر هنا أول ما تتحقق.</p>
+          <p className="mt-1 text-sm text-muted-foreground">المواظبة الأسبوعية ومراحل الحفظ تظهر هنا عند تحققها.</p>
         </div>
       </div>
 
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
         {quranBadges.map((badge) => {
           const earned = Boolean(badge.isEarned);
+          const copy = QURAN_BADGE_COPY[badge.key] ?? {};
           return (
             <article
               key={badge.key}
@@ -556,8 +592,8 @@ function QuranBadgesPanel({ badges }) {
                   {earned ? <Medal className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
                 </span>
               </div>
-              <h3 className="text-base font-black text-foreground">{badge.name ?? badge.key}</h3>
-              <p className="mt-2 text-xs leading-6 text-muted-foreground">{badge.description}</p>
+              <h3 className="text-base font-black text-foreground">{copy.name ?? badge.name ?? 'وسام قرآن'}</h3>
+              <p className="mt-2 text-xs leading-6 text-muted-foreground">{copy.description ?? badge.description ?? 'وسام خاص بتقدم القرآن.'}</p>
               <p className={cn('mt-3 text-xs font-black', earned ? 'text-primary' : 'text-muted-foreground')}>
                 {earned ? `مكتسب ${formatDate(badge.earnedAt)}` : 'لم يكتسب بعد'}
               </p>
@@ -626,7 +662,7 @@ export function QuranPage() {
       queryClient.invalidateQueries({ queryKey: ['quranProgress'] });
       queryClient.invalidateQueries({ queryKey: ['quranHistory'] });
     },
-    onError: (error) => toast.error(error.response?.data?.message || 'تعذر حفظ البداية'),
+    onError: (error) => toast.error(getQuranErrorMessage(error, 'تعذر حفظ البداية')),
   });
 
   const logMutation = useMutation({
@@ -637,7 +673,7 @@ export function QuranPage() {
       queryClient.invalidateQueries({ queryKey: ['quranHistory'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
-    onError: (error) => toast.error(error.response?.data?.message || 'تعذر تسجيل الأسبوع'),
+    onError: (error) => toast.error(getQuranErrorMessage(error, 'تعذر تسجيل الأسبوع')),
   });
 
   const targetMutation = useMutation({
@@ -646,7 +682,7 @@ export function QuranPage() {
       toast.success('تم تحديث المعدل');
       queryClient.invalidateQueries({ queryKey: ['quranProgress'] });
     },
-    onError: (error) => toast.error(error.response?.data?.message || 'تعذر تحديث المعدل'),
+    onError: (error) => toast.error(getQuranErrorMessage(error, 'تعذر تحديث المعدل')),
   });
 
   const trackMutation = useMutation({
@@ -656,7 +692,7 @@ export function QuranPage() {
       queryClient.invalidateQueries({ queryKey: ['quranProgress'] });
       queryClient.invalidateQueries({ queryKey: ['quranHistory'] });
     },
-    onError: (error) => toast.error(error.response?.data?.message || 'تعذر تحديث المسار'),
+    onError: (error) => toast.error(getQuranErrorMessage(error, 'تعذر تحديث المسار')),
   });
 
   if (progressQuery.isLoading) return <QuranSkeleton />;
