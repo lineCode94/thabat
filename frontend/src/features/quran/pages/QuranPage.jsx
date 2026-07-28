@@ -21,6 +21,7 @@ import { QuranService } from '../services/quran.service';
 
 const QURAN_TOTAL_PAGES = 604;
 const QURAN_TOTAL_JUZ = 30;
+const QURAN_PAGES_PER_JUZ = 20;
 const WEEKS_PER_MONTH = 4;
 const QURAN_BADGE_KEYS = [
   'quran_weekly_consistency',
@@ -48,13 +49,19 @@ function formatNumber(value) {
   return Number.isInteger(number) ? String(number) : number.toFixed(1).replace(/\.0$/, '');
 }
 
+function formatPages(value, rounding = 'round') {
+  const number = Number(value ?? 0);
+  const rounded = rounding === 'ceil' ? Math.ceil(number) : Math.round(number);
+  return String(Math.max(0, rounded));
+}
+
 function formatDate(value) {
   if (!value) return '-';
   return new Intl.DateTimeFormat('ar-EG', { dateStyle: 'medium' }).format(new Date(value));
 }
 
 function juzToPages(juz) {
-  return (Number(juz || 0) / QURAN_TOTAL_JUZ) * QURAN_TOTAL_PAGES;
+  return Number(juz || 0) * QURAN_PAGES_PER_JUZ;
 }
 
 function estimateMonths(remainingPages, weeklyTargetPages) {
@@ -184,7 +191,7 @@ function SetupPanel({ onSetup, isPending }) {
 
           {trackType === 'MEMORIZING' && progressValue > 0 && (
             <p className="text-xs font-bold text-muted-foreground">
-              يعني تقريبا {formatNumber(progressPages)} صفحة محفوظة من أصل {QURAN_TOTAL_PAGES} صفحة.
+              يعني تقريبا {formatPages(progressPages)} صفحة محفوظة من أصل {QURAN_TOTAL_PAGES} صفحة.
             </p>
           )}
 
@@ -204,7 +211,7 @@ function SetupPanel({ onSetup, isPending }) {
 
           {weeklyTargetPages > 0 && (
             <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm leading-7 text-muted-foreground">
-              متوقع هذا الشهر {formatNumber(monthTargetPages)} صفحة، و{copy.completionWord} بعد حوالي {formatNumber(months ?? 0)} شهر.
+              متوقع هذا الشهر {formatPages(monthTargetPages)} صفحة، و{copy.completionWord} بعد حوالي {formatNumber(months ?? 0)} شهر.
             </div>
           )}
 
@@ -231,21 +238,21 @@ function SummaryCards({ progress, logs }) {
   const cards = [
     {
       title: `${copy.action} الأسبوع ده`,
-      value: `${formatNumber(currentWeekLog?.amountPages ?? 0)} صفحة`,
+      value: `${formatPages(currentWeekLog?.amountPages ?? 0)} صفحة`,
       hint: currentWeekLog ? `تم التسجيل يوم ${formatDate(currentWeekLog.createdAt)}` : 'لسه مفيش تسجيل للأسبوع الحالي',
       icon: CalendarCheck,
       active: Boolean(currentWeekLog),
     },
     {
       title: 'متبقي للشهر ده',
-      value: `${formatNumber(remainingThisMonth)} صفحة`,
-      hint: `هدف الشهر: ${formatNumber(monthTargetPages)} صفحة حسب ورد ${formatNumber(weeklyTargetPages)} أسبوعيا`,
+      value: `${formatPages(remainingThisMonth, 'ceil')} صفحة`,
+      hint: `هدف الشهر: ${formatPages(monthTargetPages)} صفحة حسب ورد ${formatPages(weeklyTargetPages)} أسبوعيا`,
       icon: Clock3,
       active: true,
     },
     {
       title: copy.remainingTitle,
-      value: `${formatNumber(remainingAll)} صفحة`,
+      value: `${formatPages(remainingAll, 'ceil')} صفحة`,
       hint: remainingAll > 0 && months ? `لو كملت بنفس المعدل: حوالي ${formatNumber(months)} شهر` : 'تم الوصول للهدف الحالي',
       icon: BookOpen,
       active: true,
@@ -327,7 +334,7 @@ function TargetDialog({ progress, onUpdate, isPending }) {
 
           {weeklyPages > 0 && (
             <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm leading-7 text-muted-foreground">
-              بالمعدل ده هتنجز تقريبا {formatNumber(monthTargetPages)} صفحة في الشهر، والهدف يخلص بعد حوالي {formatNumber(months ?? 0)} شهر.
+              بالمعدل ده هتنجز تقريبا {formatPages(monthTargetPages)} صفحة في الشهر، والهدف يخلص بعد حوالي {formatNumber(months ?? 0)} شهر.
             </div>
           )}
 
@@ -440,7 +447,7 @@ function TrackDialog({ progress, onUpdate, isPending }) {
 
           {weeklyTargetPages > 0 && (
             <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm leading-7 text-muted-foreground">
-              المتبقي بعد التصحيح {formatNumber(remainingPages)} صفحة، والمدة التقريبية {formatNumber(months ?? 0)} شهر.
+              المتبقي بعد التصحيح {formatPages(remainingPages, 'ceil')} صفحة، والمدة التقريبية {formatNumber(months ?? 0)} شهر.
             </div>
           )}
 
@@ -470,7 +477,7 @@ function WeeklyLogPanel({ progress, logs, onSubmit, isPending }) {
           <div>
             <h2 className="text-2xl font-black text-foreground">تم تسجيل الأسبوع الحالي</h2>
             <p className="mt-2 text-sm leading-7 text-muted-foreground">
-              {copy.action} هذا الأسبوع {formatNumber(currentWeekLog.amountPages)} صفحة.
+              {copy.action} هذا الأسبوع {formatPages(currentWeekLog.amountPages)} صفحة.
             </p>
           </div>
         </div>
@@ -507,7 +514,7 @@ function WeeklyLogPanel({ progress, logs, onSubmit, isPending }) {
       </div>
       {Number(amountPages || 0) > 0 && (
         <p className="mt-4 text-sm text-muted-foreground">
-          بعد التسجيل هيتبقى عليك تقريبا {formatNumber(remainingAfterThisWeek)} صفحة.
+          بعد التسجيل هيتبقى عليك تقريبا {formatPages(remainingAfterThisWeek, 'ceil')} صفحة.
         </p>
       )}
     </form>
@@ -585,8 +592,8 @@ function HistoryTable({ logs }) {
               <tr key={log.id} className="border-b border-border/70 last:border-0">
                 <td className="p-3 font-bold">{formatDate(log.weekStartDate)}</td>
                 <td className="p-3">{log.trackType === 'MEMORIZING' ? 'حفظ' : 'مراجعة'}</td>
-                <td className="p-3">{formatNumber(log.amountPages)} صفحة</td>
-                <td className="p-3">{log.cumulativeAfter ? `${formatNumber(log.cumulativeAfter)} صفحة` : '-'}</td>
+                <td className="p-3">{formatPages(log.amountPages)} صفحة</td>
+                <td className="p-3">{log.cumulativeAfter ? `${formatPages(log.cumulativeAfter)} صفحة` : '-'}</td>
               </tr>
             ))}
           </tbody>

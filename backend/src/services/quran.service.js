@@ -1,7 +1,7 @@
 import { AUDIT_ACTIONS, AUDIT_TARGET_TYPES } from '#constants/auditLog.js';
 import { PAGINATION } from '#constants/index.js';
 import { PERMISSIONS } from '#constants/permissionRegistry.js';
-import { QURAN_TOTAL_PAGES, QURAN_TRACK_TYPES, WEEKS_PER_MONTH } from '#constants/quran.js';
+import { QURAN_PAGES_PER_JUZ, QURAN_TOTAL_PAGES, QURAN_TRACK_TYPES, WEEKS_PER_MONTH } from '#constants/quran.js';
 import { prisma } from '#lib/prisma.js';
 import { AuditLogService } from '#services/audit-log.service.js';
 import { AuthorizationService } from '#services/authorization.service.js';
@@ -24,7 +24,7 @@ function clampQuranTotal(value) {
 }
 
 function juzToPages(juz) {
-  return (Number(juz) / 30) * QURAN_TOTAL_PAGES;
+  return Number(juz) * QURAN_PAGES_PER_JUZ;
 }
 
 function serializeProgress(progress, badges = []) {
