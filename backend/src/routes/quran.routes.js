@@ -12,6 +12,7 @@ import {
   quranSetupSchema,
   quranTargetUserQuerySchema,
   quranTargetUpdateSchema,
+  quranTrackUpdateSchema,
   quranWeeklyLogSchema,
 } from '#validators/quran.validator.js';
 
@@ -50,6 +51,13 @@ router.patch(
   requirePermission(PERMISSIONS.QURAN_MANAGE_SELF),
   validateRequest(quranTargetUpdateSchema),
   asyncHandler(QuranController.updateWeeklyTarget),
+);
+
+router.patch(
+  '/progress/track',
+  requirePermission(PERMISSIONS.QURAN_MANAGE_SELF),
+  validateRequest(quranTrackUpdateSchema),
+  asyncHandler(QuranController.updateTrack),
 );
 
 router.get(

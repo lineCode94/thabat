@@ -288,6 +288,49 @@ export class QuranService {
     };
   }
 
+  static async updateTrack(actor, permissions, data) {
+    this._assertCanManageSelf(actor, permissions);
+
+    const progress = await prisma.quranProgress.findUnique({
+      where: { userId: actor.id },
+    });
+
+    if (!progress) {
+      throw ApiError.badRequest('Quran progress is not configured', 'QURAN_PROGRESS_NOT_CONFIGURED');
+    }
+
+    const cumulative = clampQuranTotal(
+      data.trackType === QURAN_TRACK_TYPES.MEMORIZING
+        ? juzToPages(data.memorizedJuz)
+        : data.cumulativePagesMemorized,
+    );
+    const trackType = data.trackType === QURAN_TRACK_TYPES.MEMORIZING && cumulative >= QURAN_TOTAL_PAGES
+      ? QURAN_TRACK_TYPES.REVIEWING
+      : data.trackType;
+
+    const updatedProgress = await prisma.quranProgress.update({
+      where: { id: progress.id },
+      data: {
+        trackType,
+        startingJuzMemorized: cumulative,
+        cumulativeJuzMemorized: cumulative,
+        weeklyTargetJuz: data.weeklyTargetPages,
+      },
+    });
+
+    const newlyEarnedBadges = await BadgeEngine.evaluateQuran(actor.id);
+    await Promise.all([
+      GamificationNotificationService.notifyBadgesEarned(actor.id, newlyEarnedBadges),
+      data.trackType !== trackType ? notifyQuranTransition(actor.id) : Promise.resolve(null),
+    ]);
+
+    return {
+      progress: serializeProgress(updatedProgress),
+      newlyEarnedBadges,
+      transitionedToReviewing: data.trackType !== trackType,
+    };
+  }
+
   static async getHistory(actor, permissions, query = {}) {
     const targetUserId = query.userId ?? actor.id;
     const targetUser = await this._assertCanViewQuran(actor, permissions, targetUserId);

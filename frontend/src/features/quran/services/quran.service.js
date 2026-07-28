@@ -21,6 +21,11 @@ export const QuranService = {
     return response.data.data;
   },
 
+  async updateTrack(payload) {
+    const response = await apiClient.patch('/quran/progress/track', payload);
+    return response.data.data;
+  },
+
   async getHistory(params = {}) {
     const response = await apiClient.get('/quran/weekly-log/history', { params });
     return {

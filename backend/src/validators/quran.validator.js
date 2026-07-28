@@ -73,6 +73,33 @@ export const quranTargetUpdateSchema = z.object({
   query: z.object({}).default({}),
 });
 
+export const quranTrackUpdateSchema = z.object({
+  body: z.object({
+    trackType: z.enum(Object.values(QURAN_TRACK_TYPES)),
+    memorizedJuz: juzAmount.optional(),
+    cumulativePagesMemorized: pageAmount.optional(),
+    weeklyTargetPages: positivePagePace,
+  }).superRefine((value, ctx) => {
+    if (value.trackType === QURAN_TRACK_TYPES.MEMORIZING && value.memorizedJuz == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['memorizedJuz'],
+        message: 'memorizedJuz is required for memorizing track',
+      });
+    }
+
+    if (value.trackType === QURAN_TRACK_TYPES.REVIEWING && value.cumulativePagesMemorized == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['cumulativePagesMemorized'],
+        message: 'cumulativePagesMemorized is required for reviewing track',
+      });
+    }
+  }),
+  params: z.object({}).default({}),
+  query: z.object({}).default({}),
+});
+
 export const quranCorrectionSchema = z.object({
   params: z.object({
     logId: z.string().uuid(),

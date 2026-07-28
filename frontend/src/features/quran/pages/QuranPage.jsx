@@ -343,6 +343,119 @@ function TargetDialog({ progress, onUpdate, isPending }) {
   );
 }
 
+function TrackDialog({ progress, onUpdate, isPending }) {
+  const [open, setOpen] = useState(false);
+  const [trackType, setTrackType] = useState(progress.trackType ?? 'MEMORIZING');
+  const [progressInput, setProgressInput] = useState('');
+  const [weeklyTargetInput, setWeeklyTargetInput] = useState(progress.weeklyTargetPages ?? '');
+  const copy = getTrackCopy(trackType);
+  const progressValue = Number(progressInput || 0);
+  const progressPages = trackType === 'MEMORIZING' ? juzToPages(progressValue) : progressValue;
+  const weeklyTargetPages = Number(weeklyTargetInput || 0);
+  const remainingPages = Math.max(0, QURAN_TOTAL_PAGES - progressPages);
+  const months = estimateMonths(remainingPages, weeklyTargetPages);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    onUpdate(
+      {
+        trackType,
+        memorizedJuz: trackType === 'MEMORIZING' ? progressValue : undefined,
+        cumulativePagesMemorized: trackType === 'REVIEWING' ? progressPages : undefined,
+        weeklyTargetPages,
+      },
+      { onSuccess: () => setOpen(false) },
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="h-11 px-5 text-sm font-black" variant="outline">
+          <RotateCcw />
+          تعديل المسار
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl border-2 text-right shadow-[0_10px_0_rgba(6,182,212,0.28)]">
+        <DialogHeader className="text-right">
+          <DialogTitle className="text-2xl font-black">تعديل مسار القرآن</DialogTitle>
+          <DialogDescription className="leading-7">
+            استخدمها لو اخترت المسار غلط. سيتم تحديث المسار والبيانات الحالية، مع الحفاظ على سجل الأسابيع القديم.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <div className="grid gap-3 md:grid-cols-2">
+            {Object.entries(TRACKS).map(([key, track]) => {
+              const selected = trackType === key;
+              const Icon = track.icon;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => {
+                    setTrackType(key);
+                    setProgressInput('');
+                  }}
+                  className={cn(
+                    'rounded-lg border-2 p-4 text-right transition',
+                    selected ? 'border-primary bg-primary/15' : 'border-border bg-background hover:border-primary/60',
+                  )}
+                >
+                  <Icon className="mb-4 h-6 w-6 text-primary" />
+                  <h3 className="font-black text-foreground">{track.title}</h3>
+                  <p className="mt-2 text-xs leading-6 text-muted-foreground">{track.description}</p>
+                </button>
+              );
+            })}
+          </div>
+
+          <label className="space-y-2">
+            <span className="text-sm font-black text-muted-foreground">{copy.setupProgressLabel}</span>
+            <Input
+              className="h-12 border-2 bg-background text-lg font-bold"
+              min="0"
+              max={copy.setupProgressMax}
+              step={copy.setupProgressStep}
+              type="number"
+              value={progressInput}
+              onChange={(event) => setProgressInput(event.target.value)}
+              placeholder={copy.setupProgressPlaceholder}
+            />
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-sm font-black text-muted-foreground">{copy.weeklyTarget}</span>
+            <Input
+              className="h-12 border-2 bg-background text-lg font-bold"
+              min="1"
+              max={QURAN_TOTAL_PAGES}
+              step="1"
+              type="number"
+              value={weeklyTargetInput}
+              onChange={(event) => setWeeklyTargetInput(event.target.value)}
+              placeholder="مثال: 10"
+            />
+          </label>
+
+          {weeklyTargetPages > 0 && (
+            <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm leading-7 text-muted-foreground">
+              المتبقي بعد التصحيح {formatNumber(remainingPages)} صفحة، والمدة التقريبية {formatNumber(months ?? 0)} شهر.
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button className="h-11 px-6 font-black" disabled={isPending || weeklyTargetPages <= 0} type="submit">
+              <Save />
+              حفظ المسار
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function WeeklyLogPanel({ progress, logs, onSubmit, isPending }) {
   const [amountPages, setAmountPages] = useState('');
   const currentWeekLog = logs.find(isCurrentWeekLog);
@@ -529,6 +642,16 @@ export function QuranPage() {
     onError: (error) => toast.error(error.response?.data?.message || 'تعذر تحديث المعدل'),
   });
 
+  const trackMutation = useMutation({
+    mutationFn: QuranService.updateTrack,
+    onSuccess: () => {
+      toast.success('تم تحديث مسار القرآن');
+      queryClient.invalidateQueries({ queryKey: ['quranProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['quranHistory'] });
+    },
+    onError: (error) => toast.error(error.response?.data?.message || 'تعذر تحديث المسار'),
+  });
+
   if (progressQuery.isLoading) return <QuranSkeleton />;
 
   if (progressQuery.isError) {
@@ -544,7 +667,12 @@ export function QuranPage() {
     <div className="mx-auto max-w-6xl space-y-5">
       <header className="rounded-lg border-2 border-border bg-background/80 p-5 text-right shadow-[0_6px_0_rgba(6,182,212,0.22)]">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          {progress && <TargetDialog progress={progress} onUpdate={targetMutation.mutate} isPending={targetMutation.isPending} />}
+          {progress && (
+            <div className="flex flex-wrap gap-3">
+              <TrackDialog progress={progress} onUpdate={trackMutation.mutate} isPending={trackMutation.isPending} />
+              <TargetDialog progress={progress} onUpdate={targetMutation.mutate} isPending={targetMutation.isPending} />
+            </div>
+          )}
           <div>
             <p className="text-sm font-black text-primary">القرآن</p>
             <h1 className="mt-1 text-3xl font-black text-foreground">الحفظ والمراجعة</h1>

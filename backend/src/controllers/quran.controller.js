@@ -22,6 +22,11 @@ export class QuranController {
     return ApiResponse.success(res, result, { message: 'Quran weekly target updated' });
   }
 
+  static async updateTrack(req, res) {
+    const result = await QuranService.updateTrack(req.user, req.permissions, req.body);
+    return ApiResponse.success(res, result, { message: 'Quran track updated' });
+  }
+
   static async getWeeklyLogHistory(req, res) {
     const result = await QuranService.getHistory(req.user, req.permissions, req.query);
     return ApiResponse.success(res, {
