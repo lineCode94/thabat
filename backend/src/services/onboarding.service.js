@@ -26,6 +26,108 @@ const RETIRED_DAILY_QURAN_ITEM_TITLES = new Set([
   'مراجعة/حفظ قرآن جديد',
 ]);
 
+const DEFAULT_DAILY_WORSHIP_CATALOG = [
+  {
+    name: 'Fajr',
+    items: [
+      ['السنة القبلية', 2, 'BOOLEAN'],
+      ['الدعاء بين الأذانين', 2, 'BOOLEAN'],
+      ['تكبيرة الإحرام', 2, 'BOOLEAN'],
+      ['الجماعة الأولى (الفجر)', 5, 'BOOLEAN'],
+      ['أذكار بعد الصلاة', 2, 'BOOLEAN'],
+      ['أذكار الصباح', 2, 'BOOLEAN'],
+    ],
+  },
+  {
+    name: 'أذكار وأعمال يومية',
+    items: [
+      ['الاستيقاظ', 1, 'BOOLEAN'],
+      ['الخلاء', 1, 'BOOLEAN'],
+      ['لبس الثوب وخلعه', 1, 'BOOLEAN'],
+      ['الوضوء', 1, 'BOOLEAN'],
+      ['دخول/خروج المنزل', 1, 'BOOLEAN'],
+      ['دخول/خروج المسجد', 1, 'BOOLEAN'],
+      ['المشي للمسجد', 1, 'BOOLEAN'],
+      ['الأكل والشرب', 1, 'BOOLEAN'],
+      ['الركوب', 1, 'BOOLEAN'],
+      ['النوم', 1, 'BOOLEAN'],
+      ['الاستغفار 100', 2, 'COUNT', 100],
+      ['حضور دروس العلم -السبت والخميس-', 5, 'BOOLEAN'],
+      ['مذاكرة دروس العلم', 5, 'BOOLEAN'],
+      ['بر الوالدين', 5, 'BOOLEAN'],
+      ['مذاكرة الدراسة أو إتقان العمل 5 ساعات', 5, 'BOOLEAN'],
+      ['دعوة', 2, 'BOOLEAN'],
+    ],
+  },
+  {
+    name: 'الظهر',
+    items: [
+      ['صلاة الضحى', 2, 'BOOLEAN'],
+      ['السنة القبلية 4 ركعات', 2, 'BOOLEAN'],
+      ['الجماعة الأولى أو الجمعة (الظهر)', 5, 'BOOLEAN'],
+      ['أذكار بعد الصلاة', 2, 'BOOLEAN'],
+      ['السنة البعدية', 2, 'BOOLEAN'],
+      ['ركعتين حرمهما الله على النار', 2, 'BOOLEAN'],
+    ],
+  },
+  {
+    name: 'العصر',
+    items: [
+      ['4 ركعات قبل', 2, 'BOOLEAN'],
+      ['الجماعة الأولى (العصر)', 5, 'BOOLEAN'],
+      ['أذكار بعد الصلاة', 2, 'BOOLEAN'],
+      ['أذكار المساء', 2, 'BOOLEAN'],
+    ],
+  },
+  {
+    name: 'المغرب',
+    items: [
+      ['الجماعة الأولى (المغرب)', 5, 'BOOLEAN'],
+      ['أذكار بعد الصلاة', 2, 'BOOLEAN'],
+      ['السنة البعدية', 2, 'BOOLEAN'],
+    ],
+  },
+  {
+    name: 'العشاء',
+    items: [
+      ['الجماعة الأولى (العشاء)', 5, 'BOOLEAN'],
+      ['أذكار بعد الصلاة', 2, 'BOOLEAN'],
+      ['السنة البعدية', 2, 'BOOLEAN'],
+    ],
+  },
+  {
+    name: 'الليل',
+    items: [
+      ['القيام ركعتين', 4, 'BOOLEAN'],
+      ['الوتر', 1, 'BOOLEAN'],
+      ['دعاء الوتر', 2, 'BOOLEAN'],
+    ],
+  },
+  {
+    name: 'أذكار وأعمال صالحة',
+    items: [
+      ['التسبيح والتهليل 100', 2, 'COUNT', 100],
+      ['الصلاة على النبي 100', 2, 'COUNT', 100],
+      ['حضور المقرأة', 2, 'BOOLEAN'],
+      ['طلب العلم', 2, 'BOOLEAN'],
+    ],
+  },
+  {
+    name: 'أعمال الجمعة',
+    daysOfWeek: [5],
+    items: [
+      ['التبكير/15 دقيقة', 1, 'BOOLEAN'],
+      ['سورة الكهف', 1, 'BOOLEAN'],
+      ['الصلاة على النبي', 1, 'BOOLEAN'],
+      ['الغسل', 1, 'BOOLEAN'],
+      ['التطيب', 1, 'BOOLEAN'],
+      ['لبس أفضل الثياب', 1, 'BOOLEAN'],
+      ['سنن الفطرة', 1, 'BOOLEAN'],
+      ['الدعاء قبل المغرب', 1, 'BOOLEAN'],
+    ],
+  },
+];
+
 export class OnboardingService {
   static async getLowestActiveWorshipLevel(client = prisma) {
     return client.worshipLevel.findFirst({
@@ -107,10 +209,101 @@ export class OnboardingService {
     return this.createNormalUserOnboarding({ userId: user.id }, client);
   }
 
+  static async ensureDefaultWorshipCatalog(client = prisma) {
+    const expectedItemCount = DEFAULT_DAILY_WORSHIP_CATALOG.reduce(
+      (total, category) => total + category.items.length,
+      0,
+    );
+    const activeCatalogCategories = await client.worshipCategory.count({
+      where: {
+        isActive: true,
+        deletedAt: null,
+        name: { in: DEFAULT_DAILY_WORSHIP_CATALOG.map((category) => category.name) },
+      },
+    });
+    const activeCatalogItems = await client.worshipItem.count({
+      where: {
+        isActive: true,
+        deletedAt: null,
+        title: {
+          in: DEFAULT_DAILY_WORSHIP_CATALOG.flatMap((category) => (
+            category.items.map((item) => item[0])
+          )),
+        },
+        category: {
+          isActive: true,
+          deletedAt: null,
+          name: { in: DEFAULT_DAILY_WORSHIP_CATALOG.map((category) => category.name) },
+        },
+      },
+    });
+
+    if (
+      activeCatalogCategories === DEFAULT_DAILY_WORSHIP_CATALOG.length
+      && activeCatalogItems >= expectedItemCount
+    ) {
+      return;
+    }
+
+    for (const [categoryIndex, category] of DEFAULT_DAILY_WORSHIP_CATALOG.entries()) {
+      const savedCategory = await client.worshipCategory.upsert({
+        where: { name: category.name },
+        update: {
+          order: categoryIndex + 1,
+          isActive: true,
+          deletedAt: null,
+        },
+        create: {
+          name: category.name,
+          order: categoryIndex + 1,
+          isActive: true,
+        },
+      });
+
+      for (const [itemIndex, item] of category.items.entries()) {
+        const [title, score, inputType, targetValue = null] = item;
+        const existingItem = await client.worshipItem.findFirst({
+          where: {
+            categoryId: savedCategory.id,
+            title,
+          },
+        });
+        const data = {
+          title,
+          inputType,
+          targetType: inputType.toLowerCase(),
+          targetValue,
+          daysOfWeek: category.daysOfWeek ?? [],
+          order: ((categoryIndex + 1) * 100) + itemIndex + 1,
+          score,
+          xp: score,
+          isActive: true,
+          deletedAt: null,
+        };
+
+        if (existingItem) {
+          await client.worshipItem.update({
+            where: { id: existingItem.id },
+            data,
+          });
+        } else {
+          await client.worshipItem.create({
+            data: {
+              categoryId: savedCategory.id,
+              ...data,
+            },
+          });
+        }
+      }
+    }
+  }
+
   static async ensureDefaultLevelRequirements(worshipLevel, client = prisma) {
     if (!worshipLevel || worshipLevel.order !== 1) {
       return;
     }
+
+    await this.ensureDefaultWorshipCatalog(client);
 
     const [activeItems, currentRequirements] = await Promise.all([
       client.worshipItem.findMany({
